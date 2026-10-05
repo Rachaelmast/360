@@ -162,11 +162,14 @@ ol.items{margin:6px 0 0;padding-left:20px;display:flex;flex-direction:column;gap
         <h2>Who are you reviewing?</h2>
         <p class="muted small">Pick an open review. Your name is never shown in the report. Ratings are grouped by relationship, and any group with fewer than 3 reviewers (except Self and Manager) is folded into "Other reviewers".</p>
       </div>
-      <div class="grid">
+      <div class="grid" id="g-pick">
         <label class="f">Review<select id="g-cycle"></select></label>
         <label class="f">Your relationship to them<select id="g-rel"></select></label>
       </div>
-      <div id="g-empty" class="notice" hidden>No open reviews yet. A Director or the Executive VP of Operations opens one under <b>Review cycles</b>.</div>
+      <div id="g-empty" class="notice stack" hidden>
+        <p><b>There are no reviews to fill out yet.</b> <span id="g-empty-who">A review has to be opened for an employee first. Once it is, it shows up here to pick.</span></p>
+        <div class="row" data-admin><button class="btn" type="button" id="g-open-cycle">Open a review</button></div>
+      </div>
     </div>
 
     <div id="g-form" class="stack" hidden>
@@ -420,6 +423,7 @@ function showTab(name){
   try{ sessionStorage.setItem("sb360.tab",name); }catch(e){}
 }
 TABS.forEach(t=>$("t-"+t).addEventListener("click",()=>showTab(t)));
+$("g-open-cycle").addEventListener("click",()=>{ showTab("cycles"); $("c-name").focus(); });
 
 /* ---------- Give feedback ---------- */
 let draft = {};
@@ -430,6 +434,8 @@ function renderGiveSelectors(){
   sel.innerHTML = list.map(c=>`<option value="${esc(c.id)}">${esc(c.name)} · ${esc(ROLES[c.role].title)} · ${esc(c.period)}</option>`).join("");
   if(list.some(c=>c.id===prev)) sel.value = prev;
   $("g-empty").hidden = list.length>0;
+  $("g-pick").hidden = list.length===0;
+  $("g-empty-who").textContent = S.admin ? "Start by opening a review for an employee. It will then show up here to pick." : "Your manager needs to open a review first. Once they do, it shows up here to pick.";
   $("g-form").hidden = list.length===0;
   const c = list.find(x=>x.id===sel.value);
   const relSel = $("g-rel"), prevRel = relSel.value;
@@ -504,7 +510,7 @@ $("c-form").addEventListener("submit", async e=>{
   e.preventDefault();
   const c = {id:newId(), name:$("c-name").value.trim(), role:$("c-role").value, period:$("c-period").value.trim(), status:"open", createdAt:new Date().toISOString()};
   if(!c.name || !c.period) return;
-  try{ await Store.saveCycle(c); $("c-msg").className="small pill good"; $("c-msg").textContent=`Opened review for ${c.name}.`; $("c-name").value=""; }
+  try{ await Store.saveCycle(c); $("c-msg").className="small pill good"; $("c-msg").textContent=`Opened review for ${c.name}. It now shows up under Give feedback.`; $("c-name").value=""; }
   catch(err){ $("c-msg").className="small pill bad"; $("c-msg").textContent="Only Editors and the owner can open reviews."; }
 });
 let pendingDelete = null;
