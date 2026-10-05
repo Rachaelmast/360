@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SkyBridge 360 Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: brand bar, tab strip, one working column (form / cycles / report / question bank). */
+:root{
+  --brand:#0054A6;      /* SkyBridge blue */
+  --brand-2:#9B5B9B;    /* SkyBridge purple, used for "self" marks */
+  --bg:#f4f6fa;
+  --surface:#ffffff;
+  --surface-2:#eef2f8;
+  --ink:#14213a;
+  --muted:#5b6785;
+  --line:#dbe2ee;
+  --on-brand:#ffffff;
+  --good:#1f7a4d; --good-bg:#e3f4ea;
+  --warn:#9a5a00; --warn-bg:#fdf0d9;
+  --bad:#a23434;  --bad-bg:#fbe5e5;
+  --focus:#0054A6;
+  --font-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body:"Figtree", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --brand:#5b9cf0; --brand-2:#c792c7; --bg:#0e1524; --surface:#151e31; --surface-2:#1c2740;
+  --ink:#e6ebf5; --muted:#9aa6c2; --line:#2a3653; --on-brand:#0b1220;
+  --good:#6fd29f; --good-bg:#14301f; --warn:#f2bd62; --warn-bg:#33270f; --bad:#f08a8a; --bad-bg:#3a1a1a;
+  --focus:#8bb8f5; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --brand:#5b9cf0; --brand-2:#c792c7; --bg:#0e1524; --surface:#151e31; --surface-2:#1c2740;
+  --ink:#e6ebf5; --muted:#9aa6c2; --line:#2a3653; --on-brand:#0b1220;
+  --good:#6fd29f; --good-bg:#14301f; --warn:#f2bd62; --warn-bg:#33270f; --bad:#f08a8a; --bad-bg:#3a1a1a;
+  --focus:#8bb8f5; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--font-body);margin:0}
+.wrap{max-width:980px;margin:0 auto;padding-inline:16px;padding-block:20px 60px}
+h1,h2,h3{font-family:var(--font-display);text-wrap:balance;margin:0;line-height:1.2}
+h1{font-size:1.6rem}
+h2{font-size:1.25rem}
+h3{font-size:1.05rem}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:.85rem}
+.eyebrow{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+.brandbar{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;justify-content:space-between;padding-block:4px 16px;border-bottom:1px solid var(--line)}
+.brandbar .mark{display:flex;gap:12px;align-items:center}
+.logo{width:44px;height:44px;border-radius:10px;background:var(--brand);color:var(--on-brand);display:grid;place-items:center;font:700 1rem var(--font-display);flex:none}
+.mode{font-size:.8rem;padding:4px 10px;border-radius:999px;background:var(--surface-2);color:var(--muted)}
+
+.tabs{display:flex;gap:4px;overflow-x:auto;margin-block:16px 20px;border-bottom:1px solid var(--line)}
+.tabs button{background:none;border:0;border-bottom:3px solid transparent;padding:10px 14px;font:600 .95rem var(--font-body);color:var(--muted);cursor:pointer;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--brand);border-bottom-color:var(--brand)}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.grid > *{min-width:0}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:.85rem;font-weight:600;color:var(--muted)}
+input[type=text],select,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 10px;width:100%}
+textarea{min-height:84px;resize:vertical}
+.btn{font:600 .92rem var(--font-body);border-radius:8px;padding:9px 16px;border:1px solid var(--brand);background:var(--brand);color:var(--on-brand);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--brand)}
+.btn.danger{border-color:var(--bad);color:var(--bad);background:transparent}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.spacer{flex:1}
+
+.notice{padding:12px 14px;border-radius:8px;background:var(--surface-2);font-size:.9rem}
+.notice.good{background:var(--good-bg);color:var(--good)}
+.notice.bad{background:var(--bad-bg);color:var(--bad)}
+.pill{display:inline-block;font-size:.75rem;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--surface-2);color:var(--muted)}
+.pill.good{background:var(--good-bg);color:var(--good)}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.pill.bad{background:var(--bad-bg);color:var(--bad)}
+
+/* rating form */
+.comp{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);overflow:hidden}
+.comp > header{padding:12px 16px;background:var(--surface-2);display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline}
+.comp > header p{font-size:.85rem;color:var(--muted)}
+.q{padding:12px 16px;border-top:1px solid var(--line);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 16px;align-items:center}
+.q:first-of-type{border-top:0}
+.q .qt{min-width:0}
+.scale{display:flex;gap:4px;flex-wrap:wrap}
+.scale input{position:absolute;opacity:0;pointer-events:none}
+.scale label{min-width:38px;height:36px;display:grid;place-items:center;border:1px solid var(--line);border-radius:8px;font-weight:600;cursor:pointer;font-variant-numeric:tabular-nums;color:var(--muted);background:var(--surface)}
+.scale input:checked + label{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+.scale input:focus-visible + label{outline:2px solid var(--focus);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.82rem;color:var(--muted)}
+.legend b{color:var(--ink);font-variant-numeric:tabular-nums}
+.comp textarea{min-height:60px}
+.comp .cmt{padding:12px 16px;border-top:1px solid var(--line)}
+@media (max-width:640px){.q{grid-template-columns:1fr}}
+
+/* progress */
+.progress{height:6px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.progress > span{display:block;height:100%;background:var(--brand);width:0;transition:width .2s}
+.sticky{position:sticky;top:env(safe-area-inset-top,0px);z-index:2;background:var(--bg);padding-block:10px}
+
+/* cycles table */
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+
+/* report */
+.kpis{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.kpi{border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;background:var(--surface)}
+.kpi .v{font:700 1.6rem var(--font-display);font-variant-numeric:tabular-nums}
+.bars{display:flex;flex-direction:column;gap:14px}
+.bar{display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr) 92px;gap:12px;align-items:center}
+.bar .name{font-weight:600;font-size:.9rem;min-width:0}
+.track{position:relative;height:22px;border-radius:6px;background:var(--surface-2)}
+.track .fill{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:var(--brand);opacity:.85}
+.track .self{position:absolute;top:-4px;bottom:-4px;width:4px;margin-left:-2px;border-radius:2px;background:var(--brand-2)}
+.track .tick{position:absolute;top:0;bottom:0;width:1px;background:var(--line)}
+.bar .vals{font-variant-numeric:tabular-nums;font-size:.85rem;text-align:right}
+.axis{display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr) 92px;gap:12px}
+.axis .ticks{position:relative;height:16px;font-size:.72rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.axis .ticks span{position:absolute;transform:translateX(-50%)}
+.key{display:flex;gap:16px;flex-wrap:wrap;font-size:.82rem;color:var(--muted)}
+.key i{display:inline-block;width:14px;height:10px;border-radius:3px;vertical-align:middle;margin-right:6px}
+@media (max-width:640px){.bar,.axis{grid-template-columns:1fr 64px}.bar .name{grid-column:1 / -1}.axis > :first-child{display:none}}
+.quotes{display:flex;flex-direction:column;gap:8px}
+.quotes blockquote{margin:0;padding:10px 14px;border-left:3px solid var(--line);background:var(--surface-2);border-radius:0 8px 8px 0}
+.quotes cite{display:block;font-style:normal;font-size:.75rem;color:var(--muted);margin-top:4px}
+.bank-role{display:flex;flex-wrap:wrap;gap:6px}
+.bank-role button{font:600 .85rem var(--font-body);padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer}
+.bank-role button[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+ol.items{margin:6px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="brandbar">
+    <div class="mark">
+      <div class="logo" aria-hidden="true">SB</div>
+      <div>
+        <div class="eyebrow">SkyBridge Healthcare</div>
+        <h1>360 Review</h1>
+      </div>
+    </div>
+    <span class="mode" id="mode">Local mode: responses stay in this browser</span>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button role="tab" id="t-give" aria-controls="p-give" aria-selected="true">Give feedback</button>
+    <button role="tab" id="t-cycles" aria-controls="p-cycles" aria-selected="false" data-admin>Review cycles</button>
+    <button role="tab" id="t-results" aria-controls="p-results" aria-selected="false" data-admin>Results</button>
+    <button role="tab" id="t-bank" aria-controls="p-bank" aria-selected="false">Question bank</button>
+  </nav>
+
+  <!-- GIVE FEEDBACK -->
+  <section id="p-give" role="tabpanel" aria-labelledby="t-give" class="stack">
+    <div class="panel stack">
+      <div>
+        <h2>Who are you reviewing?</h2>
+        <p class="muted small">Pick an open review. Your name is never shown in the report. Ratings are grouped by relationship, and any group with fewer than 3 reviewers (except Self and Manager) is folded into "Other reviewers".</p>
+      </div>
+      <div class="grid">
+        <label class="f">Review<select id="g-cycle"></select></label>
+        <label class="f">Your relationship to them<select id="g-rel"></select></label>
+      </div>
+      <div id="g-empty" class="notice" hidden>No open reviews yet. A Director or the Executive VP of Operations opens one under <b>Review cycles</b>.</div>
+    </div>
+
+    <div id="g-form" class="stack" hidden>
+      <div class="sticky">
+        <div class="row small"><span id="g-count" class="muted">0 of 0 rated</span><span class="spacer"></span><span class="muted">Ratings save when you submit</span></div>
+        <div class="progress" aria-hidden="true"><span id="g-bar"></span></div>
+      </div>
+      <div class="legend" id="g-legend"></div>
+      <div id="g-sections" class="stack"></div>
+      <div class="comp">
+        <header><h3>Open feedback</h3><p>Specific examples help most: a candidate, a client call, a tough week.</p></header>
+        <div id="g-open"></div>
+      </div>
+      <div class="row">
+        <button class="btn" id="g-submit">Submit feedback</button>
+        <span id="g-msg" class="small" role="status"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CYCLES -->
+  <section id="p-cycles" role="tabpanel" aria-labelledby="t-cycles" class="stack" hidden>
+    <form class="panel stack" id="c-form">
+      <div>
+        <h2>Open a review</h2>
+        <p class="muted small">One review per person per period. Share the page with their manager, peers, direct reports and partners so they can pick it under Give feedback.</p>
+      </div>
+      <div class="grid">
+        <label class="f">Employee name<input type="text" id="c-name" required placeholder="e.g. Taylor Morgan"></label>
+        <label class="f">Title<select id="c-role"></select></label>
+        <label class="f">Review period<input type="text" id="c-period" required placeholder="e.g. Q4 2026"></label>
+      </div>
+      <div class="row"><button class="btn" type="submit">Open review</button><span id="c-msg" class="small" role="status"></span></div>
+    </form>
+    <div class="panel stack">
+      <h2>Reviews</h2>
+      <div class="tbl"><table>
+        <thead><tr><th>Employee</th><th>Title</th><th>Period</th><th class="num">Responses</th><th>Status</th><th></th></tr></thead>
+        <tbody id="c-rows"></tbody>
+      </table></div>
+      <p id="c-empty" class="muted small" hidden>No reviews yet. Open the first one above.</p>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="p-results" role="tabpanel" aria-labelledby="t-results" class="stack" hidden>
+    <div class="panel row">
+      <label class="f" style="flex:1;min-width:220px">Report for<select id="r-cycle"></select></label>
+      <div class="row" style="align-self:flex-end">
+        <button class="btn ghost" id="r-csv">Export CSV</button>
+      </div>
+    </div>
+    <div id="r-body" class="stack"></div>
+  </section>
+
+  <!-- QUESTION BANK -->
+  <section id="p-bank" role="tabpanel" aria-labelledby="t-bank" class="stack" hidden>
+    <div class="panel stack">
+      <div>
+        <h2>Question bank</h2>
+        <p class="muted small">Every title is rated on the six SkyBridge core competencies plus the competencies for their role. Scale: 1 to 5, or N/A when the reviewer hasn't seen it.</p>
+      </div>
+      <div class="bank-role" id="b-roles"></div>
+    </div>
+    <div id="b-body" class="stack"></div>
+  </section>
+</div>
+
+<script>
+/* ---------- Question bank ---------- */
+const SCALE = [
+  {v:1,l:"Rarely"},{v:2,l:"Sometimes"},{v:3,l:"Consistently meets"},{v:4,l:"Often exceeds"},{v:5,l:"Role model"}
+];
+const RELS = [
+  {id:"self",l:"Self"},{id:"manager",l:"Manager"},{id:"peer",l:"Peer"},
+  {id:"report",l:"Direct report"},{id:"partner",l:"Cross-functional partner"}
+];
+const CORE = [
+  {id:"comm",name:"Communication & Responsiveness",d:"How they keep clinicians, clients and teammates informed.",items:[
+    "Returns calls, texts and emails from clinicians, clients and teammates within the same business day.",
+    "Gives clear, early notice of changes (start dates, cancellations, schedule or rate changes).",
+    "Listens fully before responding and confirms next steps in writing."]},
+  {id:"clin",name:"Clinician Experience",d:"How it feels to be a SkyBridge nurse, therapist or allied clinician because of this person.",items:[
+    "Treats travelers and per diem clinicians as partners, not just placements.",
+    "Advocates for clinicians when issues come up on assignment (unsafe ratios, floating, housing, payroll errors).",
+    "Their work leads to clinicians extending, coming back for another assignment, or referring friends."]},
+  {id:"integ",name:"Integrity & Compliance",d:"Honesty and care with regulated work.",items:[
+    "Is honest and accurate about pay packages, assignment details and expectations, even when the news isn't good.",
+    "Follows credentialing, Joint Commission, HIPAA and state licensure requirements without shortcuts.",
+    "Raises compliance or patient-safety concerns quickly to the right people."]},
+  {id:"team",name:"Collaboration & Teamwork",d:"How they work across recruiting, account management, credentialing, payroll and leadership.",items:[
+    "Shares information and leads across desks instead of keeping them to themselves.",
+    "Hands off cleanly to credentialing, payroll and compliance so nothing is dropped.",
+    "Handles disagreement respectfully and focuses on the clinician and client outcome."]},
+  {id:"own",name:"Accountability & Ownership",d:"Follow-through and results.",items:[
+    "Does what they say they will do, by when they said they'd do it.",
+    "Owns mistakes, fixes them, and shares what they learned.",
+    "Consistently hits or works visibly toward their goals."]},
+  {id:"adapt",name:"Adaptability & Growth",d:"Handling a fast-moving staffing market.",items:[
+    "Stays steady and solution-focused when orders cancel, rates change or a start falls through.",
+    "Seeks feedback and acts on it.",
+    "Picks up new tools, VMS platforms and processes quickly."]}
+];
+const ROLES = {
+  recruiter:{title:"Recruiter",sections:[
+    {id:"src",name:"Sourcing & Pipeline",items:[
+      "Keeps an active pipeline of qualified RNs, LPNs, therapists and allied clinicians for open orders.",
+      "Matches candidates to jobs on license state, specialty, experience and personal preferences.",
+      "Re-engages past travelers and asks for referrals."]},
+    {id:"sub",name:"Submittal Quality",items:[
+      "Submits complete profiles (skills checklists, references, licenses, certifications) the first time.",
+      "Only submits candidates who truly fit the order, protecting our credibility with clients.",
+      "Prepares candidates well for manager interviews."]},
+    {id:"pay",name:"Pay Package Transparency",items:[
+      "Explains taxable wage, stipends, per diem, overtime and guaranteed hours clearly.",
+      "Sets accurate expectations on start dates, shift, unit and cancellation policy before the offer."]},
+    {id:"onb",name:"Onboarding & On-Assignment Care",items:[
+      "Guides clinicians through credentialing, drug screen, background, physicals and compact or state licensure with no last-minute surprises.",
+      "Checks in during the first week and throughout the assignment.",
+      "Starts extension and next-assignment conversations early."]}
+  ]},
+  am:{title:"Account Manager",sections:[
+    {id:"rel",name:"Client Partnership",items:[
+      "Understands each client's units, census patterns, culture and hiring managers.",
+      "Is seen by facility and agency leaders as a trusted staffing partner."]},
+    {id:"ord",name:"Order Management",items:[
+      "Responds to new orders and VMS/MSP requests quickly and accurately.",
+      "Gives recruiters complete job details (shift, float policy, requirements, rates, interview process).",
+      "Gets submittal feedback and interview results back to recruiters fast."]},
+    {id:"iss",name:"Issue Resolution",items:[
+      "Resolves clinician and facility issues (cancellations, schedules, floating, timecards, DNRs) fairly and quickly.",
+      "Protects both the clinician's experience and the client relationship when conflicts arise."]},
+    {id:"grw",name:"Rates & Account Growth",items:[
+      "Negotiates bill rates and terms that keep our clinician pay competitive and margins healthy.",
+      "Finds extension, new-unit and new-facility opportunities."]}
+  ]},
+  director:{title:"Director",sections:[
+    {id:"lead",name:"Coaching & Development",items:[
+      "Holds regular, useful 1:1s and coaches recruiters and account managers on real deals.",
+      "Develops people for promotion and new responsibilities."]},
+    {id:"perf",name:"Performance Management",items:[
+      "Sets clear goals for submittals, starts, extensions and margin, and explains how they're measured.",
+      "Recognizes wins and addresses underperformance fairly and promptly."]},
+    {id:"ops",name:"Operational Execution",items:[
+      "Removes roadblocks between recruiting, credentialing, compliance and payroll.",
+      "Makes timely decisions and explains the reasoning."]},
+    {id:"cult",name:"Team Culture & Retention",items:[
+      "Builds a team where people want to stay and refer others.",
+      "Is approachable; team members feel safe raising problems or bad news."]}
+  ]},
+  evp:{title:"Executive VP of Operations",sections:[
+    {id:"vis",name:"Vision & Strategy",items:[
+      "Sets a clear direction for the business, including which markets, specialties and clients we focus on.",
+      "Explains how each team's work connects to company goals."]},
+    {id:"opx",name:"Operational Excellence",items:[
+      "Builds processes and systems (credentialing, VMS, payroll, ATS) that make it easy to serve clinicians and clients.",
+      "Uses data (fill rates, time-to-start, retention, margin) to make decisions."]},
+    {id:"align",name:"Cross-Functional Alignment",items:[
+      "Aligns sales, recruiting, compliance, finance and HR around shared priorities.",
+      "Resolves cross-team conflicts decisively and fairly."]},
+    {id:"comms",name:"Transparency & Culture",items:[
+      "Communicates company performance and upcoming changes openly and early.",
+      "Is visible and accessible to employees at every level.",
+      "Invests in leaders and keeps top performers."]},
+    {id:"risk",name:"Risk & Stewardship",items:[
+      "Keeps us ahead of compliance, Joint Commission certification and labor law risk.",
+      "Makes sound financial decisions that protect the company's long-term health."]}
+  ]}
+};
+const OPEN = [
+  {id:"strength",q:"What is this person's greatest strength? Give an example."},
+  {id:"improve",q:"What one thing could they do differently that would most improve the experience of our clinicians, clients or team?"},
+  {id:"other",q:"Anything else you'd like them to know?"}
+];
+const SELF_OPEN = {strength:"What are you proudest of this period? Give an example.",improve:"What one thing do you most want to improve?",other:"What support do you need from your manager or SkyBridge?"};
+
+function sectionsFor(role){
+  const core = CORE.map(c=>({...c,group:"Core",items:c.items.map((t,i)=>({id:`core.${c.id}.${i}`,t}))}));
+  const rs = ROLES[role].sections.map(s=>({...s,id:`${role}.${s.id}`,group:ROLES[role].title,items:s.items.map((t,i)=>({id:`${role}.${s.id}.${i}`,t}))}));
+  return [...rs,...core];
+}
+
+/* ---------- Helpers ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const relLabel = id => (RELS.find(r=>r.id===id)||{}).l || id;
+const avg = a => a.length ? a.reduce((x,y)=>x+y,0)/a.length : null;
+const fmt = n => n==null ? "–" : n.toFixed(2);
+const newId = () => Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+
+/* ---------- Storage: shared (artifact db) or local (this browser) ---------- */
+const S = {mode:"local", db:null, uid:null, admin:true, cycles:[], responses:[], unsubs:[]};
+const LS = {
+  get(k,d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); return true; }catch(e){ return false; } }
+};
+const Store = {
+  async saveCycle(c){
+    if(S.mode==="shared"){ await S.db.doc("cycles/"+c.id).set(c); return; }
+    S.cycles = S.cycles.filter(x=>x.id!==c.id).concat(c); LS.set("sb360.cycles",S.cycles); refresh();
+  },
+  async deleteCycle(id){
+    if(S.mode==="shared"){ await S.db.doc("cycles/"+id).delete(); return; }
+    S.cycles = S.cycles.filter(x=>x.id!==id); LS.set("sb360.cycles",S.cycles); refresh();
+  },
+  async submit(resp){
+    if(S.mode==="shared"){
+      // One document per reviewer; each review they complete is a key under `subs`.
+      const ref = S.db.doc("responses/"+S.uid);
+      const snap = await ref.get();
+      if(snap.exists) await ref.update({subs:{[resp.cycleId]:resp}});
+      else await ref.set({subs:{[resp.cycleId]:resp}});
+      return;
+    }
+    resp.id = newId();
+    S.responses.push(resp); LS.set("sb360.responses",S.responses); refresh();
+  },
+  loadLocal(){ S.cycles = LS.get("sb360.cycles",[]); S.responses = LS.get("sb360.responses",[]); }
+};
+
+async function connect(){
+  Store.loadLocal(); refresh();
+  if(!window.claude || !window.claude.use) return;
+  try{
+    const [db,user] = await Promise.all([claude.use("db"), claude.use("user")]);
+    if(!db || !user) return;
+    const uid = await user.id();
+    if(!uid) return;
+    const [owner,edit] = await Promise.all([user.isOwner(), user.canEdit()]);
+    S.mode="shared"; S.db=db; S.uid=uid; S.admin = owner || edit;
+    S.cycles=[]; S.responses=[];
+    $("mode").textContent = S.admin ? "Shared: you can open reviews and see results" : "Shared: your feedback goes to SkyBridge leadership";
+    S.unsubs.push(db.collection("cycles").onSnapshot(snap=>{
+      S.cycles = snap.docs.map(d=>d.data()); refresh();
+    }, ()=>{}));
+    if(S.admin){
+      S.unsubs.push(db.collection("responses").onSnapshot(snap=>{
+        S.responses = [];
+        snap.docs.forEach(d=>{ const subs=(d.data()||{}).subs||{}; Object.values(subs).forEach(r=>S.responses.push({...r,id:d.id+":"+r.cycleId})); });
+        refresh();
+      }, ()=>{}));
+    }
+    refresh();
+  }catch(e){ /* stay in local mode */ }
+}
+
+/* ---------- Tabs ---------- */
+const TABS = ["give","cycles","results","bank"];
+function showTab(name){
+  TABS.forEach(t=>{ $("t-"+t).setAttribute("aria-selected",String(t===name)); $("p-"+t).hidden = t!==name; });
+  try{ sessionStorage.setItem("sb360.tab",name); }catch(e){}
+}
+TABS.forEach(t=>$("t-"+t).addEventListener("click",()=>showTab(t)));
+
+/* ---------- Give feedback ---------- */
+let draft = {};
+function openCycles(){ return S.cycles.filter(c=>c.status!=="closed").sort((a,b)=>a.name.localeCompare(b.name)); }
+
+function renderGiveSelectors(){
+  const sel = $("g-cycle"), prev = sel.value, list = openCycles();
+  sel.innerHTML = list.map(c=>`<option value="${esc(c.id)}">${esc(c.name)} · ${esc(ROLES[c.role].title)} · ${esc(c.period)}</option>`).join("");
+  if(list.some(c=>c.id===prev)) sel.value = prev;
+  $("g-empty").hidden = list.length>0;
+  $("g-form").hidden = list.length===0;
+  const c = list.find(x=>x.id===sel.value);
+  const relSel = $("g-rel"), prevRel = relSel.value;
+  const rels = RELS.filter(r=> r.id!=="report" || (c && (c.role==="director"||c.role==="evp")));
+  relSel.innerHTML = rels.map(r=>`<option value="${r.id}">${r.l}</option>`).join("");
+  if(rels.some(r=>r.id===prevRel)) relSel.value = prevRel;
+  if(c && sel.dataset.rendered !== c.id+"|"+relSel.value) renderGiveForm(c, relSel.value);
+}
+
+function renderGiveForm(c, rel){
+  $("g-cycle").dataset.rendered = c.id+"|"+rel;
+  draft = {ratings:{},comments:{},open:{}};
+  $("g-legend").innerHTML = SCALE.map(s=>`<span><b>${s.v}</b> ${s.l}</span>`).join("") + `<span><b>N/A</b> Haven't seen it</span>`;
+  const self = rel==="self";
+  $("g-sections").innerHTML = sectionsFor(c.role).map(s=>`
+    <div class="comp">
+      <header><span class="eyebrow">${esc(s.group)}</span><h3>${esc(s.name)}</h3>${s.d?`<p>${esc(s.d)}</p>`:""}</header>
+      ${s.items.map(it=>`
+        <div class="q">
+          <div class="qt">${esc(it.t)}</div>
+          <div class="scale" role="radiogroup" aria-label="${esc(it.t)}">
+            ${[1,2,3,4,5,"na"].map(v=>`<input type="radio" name="${it.id}" id="${it.id}-${v}" value="${v}"><label for="${it.id}-${v}" title="${v==="na"?"Haven't seen it":SCALE[v-1].l}">${v==="na"?"N/A":v}</label>`).join("")}
+          </div>
+        </div>`).join("")}
+      <div class="cmt"><label class="f">Comments on ${esc(s.name)} (optional)<textarea data-cmt="${s.id}" id="cmt-${s.id}"></textarea></label></div>
+    </div>`).join("");
+  $("g-open").innerHTML = OPEN.map(o=>`<div class="cmt"><label class="f">${esc(self?SELF_OPEN[o.id]:o.q)}<textarea data-open="${o.id}" id="open-${o.id}"></textarea></label></div>`).join("");
+  $("g-msg").textContent=""; $("g-msg").className="small";
+  updateProgress();
+}
+
+function totalItems(){ const c = S.cycles.find(x=>x.id===$("g-cycle").value); return c ? sectionsFor(c.role).reduce((n,s)=>n+s.items.length,0) : 0; }
+function updateProgress(){
+  const n = Object.keys(draft.ratings).length, t = totalItems();
+  $("g-count").textContent = `${n} of ${t} rated`;
+  $("g-bar").style.width = t ? (100*n/t)+"%" : "0";
+}
+document.addEventListener("change",e=>{
+  const el = e.target;
+  if(el.type==="radio" && el.closest("#g-sections")){ draft.ratings[el.name] = el.value==="na" ? "na" : Number(el.value); updateProgress(); }
+  if(el.id==="g-cycle" || el.id==="g-rel"){ $("g-cycle").dataset.rendered=""; renderGiveSelectors(); }
+});
+document.addEventListener("input",e=>{
+  const el = e.target;
+  if(el.dataset.cmt) draft.comments[el.dataset.cmt] = el.value;
+  if(el.dataset.open) draft.open[el.dataset.open] = el.value;
+});
+$("g-submit").addEventListener("click", async ()=>{
+  const c = S.cycles.find(x=>x.id===$("g-cycle").value), msg=$("g-msg");
+  const t = totalItems(), n = Object.keys(draft.ratings).length;
+  if(n < t){ msg.className="small pill bad"; msg.textContent=`Rate every statement first (${t-n} left). Use N/A if you haven't seen it.`; return; }
+  const resp = {cycleId:c.id, rel:$("g-rel").value, ratings:draft.ratings,
+    comments:Object.fromEntries(Object.entries(draft.comments).filter(([,v])=>v.trim())),
+    open:Object.fromEntries(Object.entries(draft.open).filter(([,v])=>v.trim())),
+    submittedAt:new Date().toISOString()};
+  $("g-submit").disabled = true;
+  try{
+    await Store.submit(resp);
+    msg.className="small pill good"; msg.textContent=`Thanks. Your feedback for ${c.name} is in.`;
+    $("g-cycle").dataset.rendered=""; const keep = msg.textContent;
+    renderGiveSelectors(); $("g-msg").className="small pill good"; $("g-msg").textContent=keep;
+    window.scrollTo({top:0,behavior:"smooth"});
+  }catch(e){
+    msg.className="small pill bad";
+    msg.textContent = e && e.code==="invalid_argument" ? "You have view-only access, so feedback can't be saved. Ask the page owner for Contributor access." : "Couldn't save. Check your connection and submit again.";
+  }finally{ $("g-submit").disabled = false; }
+});
+
+/* ---------- Cycles ---------- */
+$("c-role").innerHTML = Object.entries(ROLES).map(([k,r])=>`<option value="${k}">${r.title}</option>`).join("");
+$("c-form").addEventListener("submit", async e=>{
+  e.preventDefault();
+  const c = {id:newId(), name:$("c-name").value.trim(), role:$("c-role").value, period:$("c-period").value.trim(), status:"open", createdAt:new Date().toISOString()};
+  if(!c.name || !c.period) return;
+  try{ await Store.saveCycle(c); $("c-msg").className="small pill good"; $("c-msg").textContent=`Opened review for ${c.name}.`; $("c-name").value=""; }
+  catch(err){ $("c-msg").className="small pill bad"; $("c-msg").textContent="Only Editors and the owner can open reviews."; }
+});
+let pendingDelete = null;
+function renderCycles(){
+  const rows = [...S.cycles].sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||""));
+  $("c-empty").hidden = rows.length>0;
+  $("c-rows").innerHTML = rows.map(c=>{
+    const n = S.responses.filter(r=>r.cycleId===c.id).length;
+    const closed = c.status==="closed";
+    return `<tr>
+      <td><b>${esc(c.name)}</b></td><td>${esc(ROLES[c.role].title)}</td><td>${esc(c.period)}</td>
+      <td class="num">${n}</td>
+      <td><span class="pill ${closed?"":"good"}">${closed?"Closed":"Open"}</span></td>
+      <td><div class="row" style="justify-content:flex-end">
+        <button class="btn ghost small" data-act="toggle" data-id="${esc(c.id)}">${closed?"Reopen":"Close"}</button>
+        <button class="btn ghost small" data-act="report" data-id="${esc(c.id)}">Report</button>
+        ${pendingDelete===c.id
+          ? `<button class="btn danger small" data-act="del-yes" data-id="${esc(c.id)}">Confirm delete</button><button class="btn ghost small" data-act="del-no">Keep</button>`
+          : `<button class="btn danger small" data-act="del" data-id="${esc(c.id)}">Delete</button>`}
+      </div></td></tr>`;
+  }).join("");
+}
+$("c-rows").addEventListener("click", async e=>{
+  const b = e.target.closest("button"); if(!b) return;
+  const c = S.cycles.find(x=>x.id===b.dataset.id);
+  if(b.dataset.act==="toggle" && c) await Store.saveCycle({...c,status:c.status==="closed"?"open":"closed"}).catch(()=>{});
+  if(b.dataset.act==="report"){ $("r-cycle").value=c.id; renderResults(); showTab("results"); }
+  if(b.dataset.act==="del"){ pendingDelete=b.dataset.id; renderCycles(); }
+  if(b.dataset.act==="del-no"){ pendingDelete=null; renderCycles(); }
+  if(b.dataset.act==="del-yes"){ pendingDelete=null; await Store.deleteCycle(b.dataset.id).catch(()=>{}); }
+});
+
+/* ---------- Results ---------- */
+const SAMPLE_ID = "__sample";
+function sampleData(){
+  const cycle = {id:SAMPLE_ID,name:"Sample: Jordan Avery",role:"recruiter",period:"Example data",status:"open"};
+  const secs = sectionsFor("recruiter");
+  // Deterministic pseudo-random so the sample looks the same every time.
+  let seed = 7; const rnd = () => (seed = (seed*9301+49297)%233280)/233280;
+  const bias = {"recruiter.pay":.6,"recruiter.onb":.4,"core.comm":-.7,"core.own":.2,"recruiter.sub":-.3};
+  const people = [["self",.5],["manager",0],["peer",-.1],["peer",.1],["peer",0],["partner",-.2],["partner",.1],["partner",0]];
+  const notes = {
+    strength:["","Breaks down pay packages so clearly that clinicians rarely come back confused about stipends.","Candidates trust Jordan. Two of my travelers asked for them by name on their next assignment.","Great at keeping a nurse calm through a stressful credentialing timeline.","Always shares leads when a candidate isn't right for their own orders.","Credentialing files from Jordan are complete and on time.","Checks in with travelers during week one without being asked.","Clinicians extend when Jordan is their recruiter."],
+    improve:["","Double-check skills checklists before submitting; we had two bounced from a VMS last month.","Return texts faster on Fridays. Clinicians starting Monday get anxious when they don't hear back.","Loop in the account manager sooner when a start is at risk.","Set clearer expectations on guaranteed hours before the offer.","Update the ATS the same day so the team sees where candidates stand.","Ask for feedback on submittals that didn't land.","Plan extension conversations earlier, around week 8."]
+  };
+  const resps = people.map(([rel,lift],i)=>{
+    const ratings = {};
+    secs.forEach(s=>s.items.forEach(it=>{ const b = 3.4 + (bias[s.id]||0) + lift + (rnd()-.5)*1.2; ratings[it.id] = Math.max(1,Math.min(5,Math.round(b))); }));
+    const open = rel==="self" ? {strength:"Getting three nurses extended at the same facility.",improve:"Faster follow-up when my desk gets busy."}
+      : {strength:notes.strength[i], improve:notes.improve[i]};
+    return {id:"s"+i,cycleId:SAMPLE_ID,rel,ratings,comments:{},open};
+  });
+  return {cycle,resps};
+}
+
+function renderResultsSelect(){
+  const sel=$("r-cycle"), prev=sel.value;
+  const rows=[...S.cycles].sort((a,b)=>a.name.localeCompare(b.name));
+  sel.innerHTML = rows.map(c=>`<option value="${esc(c.id)}">${esc(c.name)} · ${esc(ROLES[c.role].title)} · ${esc(c.period)}</option>`).join("")
+    + `<option value="${SAMPLE_ID}">Sample report (example data)</option>`;
+  const keep = [...sel.options].some(o=>o.value===prev) && (prev!==SAMPLE_ID || sampleChosen);
+  sel.value = keep ? prev : (rows[0] ? rows[0].id : SAMPLE_ID);
+}
+
+function groupKey(rel, counts){
+  if(rel==="self"||rel==="manager") return rel;
+  return counts[rel] >= 3 ? rel : "other";
+}
+
+function renderResults(){
+  const id = $("r-cycle").value, body = $("r-body");
+  let cycle, resps;
+  if(id===SAMPLE_ID){ ({cycle,resps} = sampleData()); }
+  else { cycle = S.cycles.find(c=>c.id===id); resps = S.responses.filter(r=>r.cycleId===id); }
+  if(!cycle){ body.innerHTML=""; return; }
+  const secs = sectionsFor(cycle.role);
+  const selfR = resps.filter(r=>r.rel==="self"), others = resps.filter(r=>r.rel!=="self");
+  const counts = {}; others.forEach(r=>counts[r.rel]=(counts[r.rel]||0)+1);
+  const banner = id===SAMPLE_ID ? `<div class="notice">This is example data for a made-up Recruiter so you can see what a finished report looks like. It isn't saved anywhere.</div>` : "";
+  if(!others.length){
+    body.innerHTML = banner + `<div class="panel stack"><h2>${esc(cycle.name)}</h2><p class="muted">No reviewer feedback yet${selfR.length?" (self review is in)":""}. Results appear here as feedback comes in. Aim for at least a manager, 3 peers and 3 partners${cycle.role==="director"||cycle.role==="evp"?", plus 3 direct reports":""}.</p></div>`;
+    return;
+  }
+  const score = (list, sec) => avg(list.flatMap(r=>sec.items.map(it=>r.ratings[it.id]).filter(v=>typeof v==="number")));
+  const rowsData = secs.map(s=>({s, o:score(others,s), me:selfR.length?score(selfR,s):null}));
+  const overall = avg(rowsData.map(r=>r.o).filter(v=>v!=null));
+  const selfOverall = selfR.length ? avg(rowsData.map(r=>r.me).filter(v=>v!=null)) : null;
+  const ranked = rowsData.filter(r=>r.o!=null).sort((a,b)=>b.o-a.o);
+  const gaps = rowsData.filter(r=>r.o!=null && r.me!=null).map(r=>({...r,g:r.me-r.o}));
+  const blind = gaps.filter(x=>x.g>=0.75).sort((a,b)=>b.g-a.g);
+  const hidden = gaps.filter(x=>x.g<=-0.75).sort((a,b)=>a.g-b.g);
+  const pos = v => ((v-1)/4*100)+"%";
+  const tone = v => v>=4 ? "good" : v<3 ? "bad" : "warn";
+
+  const groups = {}; others.forEach(r=>{ const k=groupKey(r.rel,counts); (groups[k]=groups[k]||[]).push(r); });
+  const groupOrder = ["manager","peer","report","partner","other"].filter(k=>groups[k]);
+  const gLabel = k => k==="other" ? "Other reviewers" : relLabel(k);
+
+  const quotes = (key) => {
+    const list = resps.map(r=>({t:(r.open||{})[key], rel:r.rel})).filter(x=>x.t);
+    return list.length ? list.map(x=>`<blockquote>${esc(x.t)}<cite>${x.rel==="self"?"Self":x.rel==="manager"?"Manager":"Reviewer"}</cite></blockquote>`).join("") : `<p class="muted small">No comments.</p>`;
+  };
+  const secComments = secs.map(s=>({s, list:resps.map(r=>(r.comments||{})[s.id]).filter(Boolean)})).filter(x=>x.list.length);
+
+  body.innerHTML = banner + `
+    <div class="panel stack">
+      <div class="row"><div><div class="eyebrow">${esc(ROLES[cycle.role].title)} · ${esc(cycle.period)}</div><h2>${esc(cycle.name)}</h2></div></div>
+      <div class="kpis">
+        <div class="kpi"><div class="eyebrow">Reviewers</div><div class="v">${others.length}</div><div class="small muted">${groupOrder.map(k=>`${groups[k].length} ${gLabel(k).toLowerCase()}`).join(", ")}</div></div>
+        <div class="kpi"><div class="eyebrow">Overall (others)</div><div class="v">${fmt(overall)}</div><div class="small"><span class="pill ${tone(overall)}">${overall>=4?"Strength":overall<3?"Development area":"Solid"}</span></div></div>
+        <div class="kpi"><div class="eyebrow">Self rating</div><div class="v">${fmt(selfOverall)}</div><div class="small muted">${selfOverall==null?"Self review not in yet":(selfOverall-overall>=0?"+":"")+(selfOverall-overall).toFixed(2)+" vs others"}</div></div>
+        <div class="kpi"><div class="eyebrow">Top strength</div><div class="v" style="font-size:1.05rem;line-height:1.3">${esc(ranked[0].s.name)}</div><div class="small muted">${fmt(ranked[0].o)} avg</div></div>
+      </div>
+    </div>
+
+    <div class="panel stack">
+      <div class="row"><h2>Competency scores</h2><span class="spacer"></span>
+        <div class="key"><span><i style="background:var(--brand)"></i>Others' average</span>${selfR.length?`<span><i style="background:var(--brand-2);width:4px"></i>Self</span>`:""}</div></div>
+      <div class="bars">
+        ${rowsData.map(r=>`
+          <div class="bar">
+            <div class="name">${esc(r.s.name)}<div class="small muted" style="font-weight:400">${esc(r.s.group)}</div></div>
+            <div class="track" role="img" aria-label="${esc(r.s.name)}: others ${fmt(r.o)}${r.me!=null?", self "+fmt(r.me):""} out of 5">
+              ${[2,3,4].map(t=>`<span class="tick" style="left:${pos(t)}"></span>`).join("")}
+              ${r.o!=null?`<span class="fill" style="width:${pos(r.o)}"></span>`:""}
+              ${r.me!=null?`<span class="self" style="left:${pos(r.me)}"></span>`:""}
+            </div>
+            <div class="vals"><b>${fmt(r.o)}</b>${r.me!=null?` <span class="muted">/ ${fmt(r.me)}</span>`:""}</div>
+          </div>`).join("")}
+        <div class="axis"><div></div><div class="ticks">${[1,2,3,4,5].map(t=>`<span style="left:${pos(t)}">${t}</span>`).join("")}</div><div></div></div>
+      </div>
+    </div>
+
+    ${selfR.length?`<div class="grid">
+      <div class="panel stack"><h3>Blind spots</h3><p class="small muted">Rated themselves 0.75+ higher than others did.</p>
+        ${blind.length?blind.map(x=>`<div class="row"><span>${esc(x.s.name)}</span><span class="spacer"></span><span class="pill warn">+${x.g.toFixed(2)}</span></div>`).join(""):`<p class="small muted">None. Self view lines up with others.</p>`}</div>
+      <div class="panel stack"><h3>Hidden strengths</h3><p class="small muted">Others rated them 0.75+ higher than they rated themselves.</p>
+        ${hidden.length?hidden.map(x=>`<div class="row"><span>${esc(x.s.name)}</span><span class="spacer"></span><span class="pill good">${x.g.toFixed(2)}</span></div>`).join(""):`<p class="small muted">None.</p>`}</div>
+    </div>`:""}
+
+    <div class="panel stack">
+      <h2>By relationship</h2>
+      <p class="small muted">Peer, direct report and partner groups with fewer than 3 reviewers are combined into "Other reviewers" to protect anonymity.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Competency</th>${selfR.length?`<th class="num">Self</th>`:""}${groupOrder.map(k=>`<th class="num">${gLabel(k)} (${groups[k].length})</th>`).join("")}</tr></thead>
+        <tbody>${rowsData.map(r=>`<tr><td>${esc(r.s.name)}</td>${selfR.length?`<td class="num">${fmt(r.me)}</td>`:""}${groupOrder.map(k=>`<td class="num">${fmt(score(groups[k],r.s))}</td>`).join("")}</tr>`).join("")}</tbody>
+      </table></div>
+    </div>
+
+    <div class="panel stack"><h2>Greatest strengths</h2><div class="quotes">${quotes("strength")}</div></div>
+    <div class="panel stack"><h2>What would make the biggest difference</h2><div class="quotes">${quotes("improve")}</div></div>
+    <div class="panel stack"><h2>Anything else</h2><div class="quotes">${quotes("other")}</div></div>
+    ${secComments.length?`<div class="panel stack"><h2>Competency comments</h2>${secComments.map(x=>`<div class="stack" style="gap:6px"><h3>${esc(x.s.name)}</h3><div class="quotes">${x.list.map(t=>`<blockquote>${esc(t)}</blockquote>`).join("")}</div></div>`).join("")}</div>`:""}
+  `;
+}
+let sampleChosen = false;
+$("r-cycle").addEventListener("change", ()=>{ sampleChosen = $("r-cycle").value===SAMPLE_ID; renderResults(); });
+
+function toCSV(){
+  const id = $("r-cycle").value;
+  let cycle, resps;
+  if(id===SAMPLE_ID){ ({cycle,resps} = sampleData()); } else { cycle = S.cycles.find(c=>c.id===id); resps = S.responses.filter(r=>r.cycleId===id); }
+  if(!cycle) return null;
+  const secs = sectionsFor(cycle.role), items = secs.flatMap(s=>s.items.map(it=>({...it,sec:s.name})));
+  const q = v => `"${String(v??"").replace(/"/g,'""')}"`;
+  const head = ["Employee","Title","Period","Relationship",...items.map(it=>`${it.sec}: ${it.t}`),...OPEN.map(o=>o.q)];
+  const lines = resps.map(r=>[cycle.name,ROLES[cycle.role].title,cycle.period,relLabel(r.rel),...items.map(it=>r.ratings[it.id]==="na"?"N/A":r.ratings[it.id]),...OPEN.map(o=>(r.open||{})[o.id]||"")]);
+  return {name:`360-${cycle.name.replace(/[^a-z0-9]+/gi,"-")}-${cycle.period.replace(/[^a-z0-9]+/gi,"-")}.csv`, text:[head,...lines].map(l=>l.map(q).join(",")).join("\n")};
+}
+$("r-csv").addEventListener("click", async ()=>{
+  const f = toCSV(); if(!f) return;
+  const dl = window.claude && window.claude.use ? await claude.use("downloads").catch(()=>null) : null;
+  if(dl){ try{ await dl.save({filename:f.name,data:f.text}); }catch(e){} return; }
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([f.text],{type:"text/csv"})); a.download = f.name; a.click();
+});
+
+/* ---------- Question bank ---------- */
+let bankRole = "recruiter";
+function renderBank(){
+  $("b-roles").innerHTML = Object.entries(ROLES).map(([k,r])=>`<button aria-pressed="${k===bankRole}" data-role="${k}">${r.title}</button>`).join("");
+  const secs = sectionsFor(bankRole);
+  const n = secs.reduce((a,s)=>a+s.items.length,0);
+  $("b-body").innerHTML = `<p class="small muted">${n} rated statements + ${OPEN.length} open questions for ${ROLES[bankRole].title}.</p>` + secs.map(s=>`
+    <div class="panel"><div class="eyebrow">${esc(s.group)}</div><h3>${esc(s.name)}</h3><ol class="items">${s.items.map(it=>`<li>${esc(it.t)}</li>`).join("")}</ol></div>`).join("")
+    + `<div class="panel"><div class="eyebrow">Open feedback</div><h3>Written questions</h3><ol class="items">${OPEN.map(o=>`<li>${esc(o.q)}</li>`).join("")}</ol></div>`;
+}
+$("b-roles").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; bankRole=b.dataset.role; renderBank(); });
+
+/* ---------- Render ---------- */
+function refresh(){
+  document.querySelectorAll("[data-admin]").forEach(el=>el.hidden=!S.admin);
+  if(!S.admin && ($("t-cycles").getAttribute("aria-selected")==="true"||$("t-results").getAttribute("aria-selected")==="true")) showTab("give");
+  renderGiveSelectors(); renderCycles(); renderResultsSelect(); renderResults();
+}
+renderBank();
+let startTab = "give"; try{ startTab = sessionStorage.getItem("sb360.tab") || "give"; }catch(e){}
+showTab(TABS.includes(startTab) ? startTab : "give");
+connect();
+</script>
+</body>
+</html>
