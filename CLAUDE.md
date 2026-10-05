@@ -11,4 +11,5 @@ SkyBridge Healthcare 360 Review tool, a single-page app with no build step.
 - `index.html` is the same page wrapped in a full HTML document so it runs standalone in a browser. After editing `app.html`, regenerate `index.html` so the two stay identical apart from the wrapper.
 - Question bank: `CORE` (shared competencies), `ROLES` (Recruiter, Account Manager, Director, Executive VP of Operations), `OPEN` (written questions) at the top of the script.
 - Storage: when it runs as an Artifact, the page uses the shared `db` capability (`cycles/*` that only editors can write; `responses/<reviewerId>` that each reviewer writes for themselves and only editors and the owner can read). Anywhere else it falls back to `localStorage`.
+- Placeholders: `DEV` (development ideas per competency) and `buildDemo()` (sample people and comments) are placeholder content meant to be replaced with SkyBridge's own.
 - Anonymity: peer, direct report, and partner groups with fewer than 3 reviewers are folded into "Other reviewers" in the report.
