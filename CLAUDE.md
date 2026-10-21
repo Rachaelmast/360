@@ -17,7 +17,9 @@ SkyBridge Healthcare 360 Review tool, a single-page app with no build step.
 ## SkyBridge VMS (`vms/`)
 A vendor management system with the same conventions as the 360 tool: no build step, single page.
 
-- `vms/app.html` is the source, published as a claude.ai Artifact (https://claude.ai/artifact/7oVYvA7Pg2S7GWJiNUGUxw) with the `db`, `user` and `downloads` capabilities. `vms/index.html` is the same page with the full-document wrapper. After editing `app.html`, regenerate `index.html` by inserting `</head><body>` after the first `</style>` line and adding the doctype/meta header and the closing tags.
-- Collections (shared `db` docs, or `localStorage` keys `sbvms.<name>`): `facilities`, `vendors`, `reqs`, `subs`, `assigns`, `timesheets`, `invoices`.
+- `vms/app.html` is the source, published as a claude.ai Artifact (https://claude.ai/artifact/7oVYvA7Pg2S7GWJiNUGUxw) with the `db`, `user`, `downloads` and `sample` capabilities. `vms/index.html` is the same page with the full-document wrapper. After editing `app.html`, regenerate `index.html` by inserting `</head><body>` after the first `</style>` line and adding the doctype/meta header and the closing tags.
+- Collections (shared `db` docs, or `localStorage` keys `sbvms.<name>`): `facilities` (rate cards in `rates`, `budget`, `mileage`), `vendors`, `reqs`, `subs`, `assigns`, `timesheets`, `invoices`, `activity` (audit log, written through `log()`).
 - Roles (`S.role`: admin, facility, vendor) only change the view through `scope()` and `can`. They are not a security boundary.
 - `buildDemo()` holds the placeholder sample data, kept in memory only.
+- Claude features (`parsePosting`, `compareCandidates`, `askData`) only appear when `claude.use("sample")` resolves, so they're hidden in `index.html`.
+- Money rules: overtime after 40 hours at 1.5× (hourly only); the VMS fee applies to labor, not expenses; mileage uses the facility's rate.

@@ -197,6 +197,56 @@ tfoot td{font-weight:700;border-top:2px solid var(--line);border-bottom:0}
   .viewas select{flex:1}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* additions: search, AI, checklists, activity, reports */
+.kbd{font:600 .7rem var(--font-body);border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;color:var(--muted);background:var(--surface)}
+.searchbtn{display:inline-flex;gap:10px;align-items:center;font:500 .86rem var(--font-body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:7px 10px 7px 12px;cursor:pointer}
+.searchbtn:hover{border-color:var(--brand);color:var(--ink)}
+.searchbtn svg{width:15px;height:15px}
+.pal-list{display:flex;flex-direction:column;max-height:min(420px,55dvh);overflow:auto;margin-inline:-6px}
+.pal-list button{all:unset;box-sizing:border-box;display:grid;grid-template-columns:86px minmax(0,1fr);gap:10px;align-items:center;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:.9rem}
+.pal-list button:hover,.pal-list button.on{background:var(--surface-2)}
+.pal-list button:focus-visible{outline:2px solid var(--focus)}
+.pal-list .k{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.pal-list b{font-weight:600}
+.ai{border:1px solid color-mix(in oklab,var(--brand) 35%,var(--line));background:color-mix(in oklab,var(--brand) 5%,var(--surface));border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.ai .out{white-space:pre-wrap;font-size:.9rem;line-height:1.55}
+.ai-tag{display:inline-flex;gap:6px;align-items:center;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--brand)}
+.ai-tag svg{width:14px;height:14px}
+.spin{width:14px;height:14px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:sp .8s linear infinite;display:inline-block;vertical-align:-2px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.checks{display:flex;flex-direction:column;gap:8px}
+.checks label{display:flex;gap:10px;align-items:center;font-size:.92rem}
+.checks input{width:18px;height:18px;accent-color:var(--brand)}
+.score{display:flex;gap:6px}
+.score label{position:relative}
+.score input{position:absolute;opacity:0}
+.score span{display:grid;place-items:center;width:40px;height:40px;border:1px solid var(--line);border-radius:9px;font:700 1rem var(--font-display);cursor:pointer;background:var(--surface)}
+.score input:checked + span{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+.score input:focus-visible + span{outline:2px solid var(--focus);outline-offset:2px}
+.feed{display:flex;flex-direction:column}
+.feed > div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:9px 0;border-top:1px solid var(--line);font-size:.88rem}
+.feed > div:first-child{border-top:0}
+.feed .who{font-weight:600}
+.feed time{color:var(--muted);font-size:.78rem;white-space:nowrap}
+.budget{display:flex;flex-direction:column;gap:6px}
+.budget .trk{position:relative;height:12px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.budget .trk .c{position:absolute;inset:0 auto 0 0;background:color-mix(in oklab,var(--brand) 30%,var(--surface-2))}
+.budget .trk .i{position:absolute;inset:0 auto 0 0;background:var(--brand)}
+.budget .trk .i.over{background:var(--bad)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.78rem;color:var(--muted)}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.split{display:grid;gap:16px;grid-template-columns:minmax(0,3fr) minmax(0,2fr)}
+.split > *{min-width:0}
+@media (max-width:860px){.split{grid-template-columns:1fr}}
+.ratecard td input{padding:6px 8px;max-width:110px}
+.ratecard td select{padding:6px 8px;width:auto}
+@media (max-width:640px){
+  .hbar{grid-template-columns:minmax(0,1fr) auto!important}
+  .hbar > span:first-child{grid-column:1 / -1}
+  .searchbtn .kbd{display:none}
+}
 </style>
 
 <div class="wrap">
@@ -211,6 +261,7 @@ tfoot td{font-weight:700;border-top:2px solid var(--line);border-bottom:0}
       </div>
     </div>
     <div class="top-right">
+      <button class="searchbtn" data-act="search" aria-label="Search everything"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7" cy="7" r="5"/><path d="M11 11l3.5 3.5" stroke-linecap="round"/></svg>Search<span class="kbd">Ctrl K</span></button>
       <div class="viewas">
         <span class="eyebrow">Viewing as</span>
         <select id="role" aria-label="Role">
@@ -231,8 +282,9 @@ tfoot td{font-weight:700;border-top:2px solid var(--line);border-bottom:0}
     <button role="tab" id="t-reqs" aria-controls="p-reqs">Requisitions</button>
     <button role="tab" id="t-subs" aria-controls="p-subs">Submittals</button>
     <button role="tab" id="t-assign" aria-controls="p-assign">Assignments</button>
-    <button role="tab" id="t-time" aria-controls="p-time">Timesheets</button>
+    <button role="tab" id="t-time" aria-controls="p-time">Time &amp; expenses</button>
     <button role="tab" id="t-inv" aria-controls="p-inv">Invoices</button>
+    <button role="tab" id="t-reports" aria-controls="p-reports">Reports</button>
     <button role="tab" id="t-partners" aria-controls="p-partners">Vendors &amp; facilities</button>
   </nav>
 
@@ -248,6 +300,7 @@ tfoot td{font-weight:700;border-top:2px solid var(--line);border-bottom:0}
   <section id="p-assign" role="tabpanel" aria-labelledby="t-assign" class="stack" hidden></section>
   <section id="p-time" role="tabpanel" aria-labelledby="t-time" class="stack" hidden></section>
   <section id="p-inv" role="tabpanel" aria-labelledby="t-inv" class="stack" hidden></section>
+  <section id="p-reports" role="tabpanel" aria-labelledby="t-reports" class="stack" hidden></section>
   <section id="p-partners" role="tabpanel" aria-labelledby="t-partners" class="stack" hidden></section>
 </div>
 <dialog id="dlg" class="dlg" aria-labelledby="dlg-title"></dialog>
@@ -261,13 +314,18 @@ const DISCIPLINES = ["RN","LPN","CNA","HHA","PT","PTA","OT","ST","MSW"];
 const THERAPY = ["PT","PTA","OT","ST"];
 const SETTINGS = ["Home Health","Hospice","Acute"];
 const SHIFTS = ["Days 8a–5p","Days 7a–7p","Nights 7p–7a","Evenings 3p–11p","Flexible visits"];
+const UNITS = {hour:{l:"Hourly",u:"hr",pl:"hours"}, visit:{l:"Per visit",u:"visit",pl:"visits"}};
 const STAGES = [{id:"submitted",l:"Submitted"},{id:"shortlisted",l:"Shortlisted"},{id:"interview",l:"Interview"},{id:"offer",l:"Offer"},{id:"accepted",l:"Accepted"}];
 const CLOSED = {declined:"Declined",withdrawn:"Withdrawn"};
+const MODES = ["Phone","Video","In person"];
 const CREDS = [{id:"license",l:"License"},{id:"bls",l:"BLS"},{id:"tb",l:"TB test"},{id:"physical",l:"Physical"},{id:"background",l:"Background"}];
+const ONBOARD = [{id:"orientation",l:"Orientation scheduled"},{id:"emr",l:"EMR login issued"},{id:"badge",l:"Badge and parking set up"},{id:"drug",l:"Drug screen cleared"}];
 const VDOCS = [{id:"coi",l:"Insurance (COI)"},{id:"wc",l:"Workers' comp"},{id:"msa",l:"MSA"}];
+const DIST = [["t1","Tier 1 only"],["d1","Tier 1 now, all tiers in 1 day"],["d2","Tier 1 now, all tiers in 2 days"],["d3","Tier 1 now, all tiers in 3 days"],["d5","Tier 1 now, all tiers in 5 days"],["all","All tiers now"]];
 const DAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-const OT_AFTER = 40, OT_MULT = 1.5;
-const COLS = ["facilities","vendors","reqs","subs","assigns","timesheets","invoices"];
+const OT_AFTER = 40, OT_MULT = 1.5, DEFAULT_MILEAGE = 0.70;
+const COLS = ["facilities","vendors","reqs","subs","assigns","timesheets","invoices","activity"];
+const ICON_AI = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M8 1.5l1.6 4.2 4.4 1.3-4.4 1.3L8 12.5 6.4 8.3 2 7l4.4-1.3z"/><path d="M13 11.5l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z"/></svg>`;
 
 /* =========================================================
    Helpers
@@ -285,16 +343,28 @@ function daysUntil(iso){ return iso ? daysBetween(today(), iso) : null; }
 function lastSaturday(weeksBack=0){ const d = new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate() - ((d.getDay()+1)%7 || 7) - 7*weeksBack); return isoOf(d); }
 function fmtD(iso){
   if(!iso) return "–";
-  const d = new Date(iso+"T12:00");
+  const d = new Date(iso.slice(0,10)+"T12:00");
   return d.toLocaleDateString("en-US", d.getFullYear()===new Date().getFullYear() ? {month:"short",day:"numeric"} : {month:"short",day:"numeric",year:"numeric"});
+}
+function fmtDT(local){
+  if(!local) return "–";
+  const d = new Date(local);
+  return d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})+" · "+d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"});
+}
+function fmtAgo(iso){
+  const m = Math.round((Date.now() - new Date(iso))/6e4);
+  if(m<1) return "just now"; if(m<60) return m+" min ago";
+  const h = Math.round(m/60); if(h<24) return h+" hr ago";
+  const d = Math.round(h/24); return d<7 ? plural(d,"day")+" ago" : fmtD(iso);
 }
 const usd = n => (n||0).toLocaleString("en-US",{style:"currency",currency:"USD"});
 const usd0 = n => (n||0).toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0});
-const rate = n => usd(n)+"/hr";
+const rateU = (n, unit="hour") => usd(n)+"/"+(UNITS[unit]||UNITS.hour).u;
 const sum = a => a.reduce((x,y)=>x+(+y||0),0);
 const avg = a => a.length ? sum(a)/a.length : null;
 const plural = (n, w) => `${n} ${w}${n===1?"":"s"}`;
 const norm = s => String(s||"").toLowerCase().replace(/[^a-z0-9]/g,"");
+const lower1 = t => t.charAt(0).toLowerCase()+t.slice(1);
 const EMPTY_ICON = `<svg viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="2"><rect x="10" y="8" width="36" height="42" rx="6"/><path d="M19 20h18M19 28h18M19 36h10" stroke-linecap="round"/></svg>`;
 function empty(title, text, btn=""){ return `<div class="empty">${EMPTY_ICON}<h3>${esc(title)}</h3><p class="muted small">${esc(text)}</p>${btn}</div>`; }
 function toast(text){
@@ -309,16 +379,26 @@ const SS = {
   get(k,d){ try{ return sessionStorage.getItem(k) ?? d; }catch(e){ return d; } },
   set(k,v){ try{ sessionStorage.setItem(k,v); }catch(e){} }
 };
+async function saveFile(name, text){
+  if(S.downloads){ try{ await S.downloads.save({filename:name,data:text}); }catch(e){} return; }
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text],{type:"text/csv"})); a.download = name; a.click();
+}
+const csv = rows => rows.map(l=>l.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\n");
 
 /* =========================================================
    Sample data (placeholders, in memory only)
    ========================================================= */
 function buildDemo(){
+  const R_ = (unit,target,max) => ({unit,target,max});
   const facilities = [
-    {id:"f1",name:"Lakeside Home Health",setting:"Home Health",city:"Columbus",state:"OH",contact:"Dana Whitlock",email:"dana.whitlock@example.com",feePct:4,units:["Field visits","Wound care team","Intake"]},
-    {id:"f2",name:"Cedar Ridge Hospice",setting:"Hospice",city:"Dayton",state:"OH",contact:"Marcus Bell",email:"marcus.bell@example.com",feePct:4.5,units:["Field team","Inpatient unit","Continuous care"]},
-    {id:"f3",name:"Northgate Medical Center",setting:"Acute",city:"Cincinnati",state:"OH",contact:"Priya Natarajan",email:"priya.natarajan@example.com",feePct:3.5,units:["Med/Surg 4W","ICU","Emergency","Telemetry"]},
-    {id:"f4",name:"Riverbend Home Care",setting:"Home Health",city:"Louisville",state:"KY",contact:"Elena Ortiz",email:"elena.ortiz@example.com",feePct:4,units:["Field visits","Therapy"]}
+    {id:"f1",name:"Lakeside Home Health",setting:"Home Health",city:"Columbus",state:"OH",contact:"Dana Whitlock",email:"dana.whitlock@example.com",feePct:4,mileage:0.70,budget:1200000,units:["Field visits","Wound care team","Intake"],
+      rates:{RN:R_("hour",78,86),LPN:R_("hour",54,58),PTA:R_("hour",62,66)}},
+    {id:"f2",name:"Cedar Ridge Hospice",setting:"Hospice",city:"Dayton",state:"OH",contact:"Marcus Bell",email:"marcus.bell@example.com",feePct:4.5,mileage:0.70,budget:900000,units:["Field team","Inpatient unit","Continuous care"],
+      rates:{RN:R_("hour",82,88),LPN:R_("hour",56,60),HHA:R_("hour",32,35)}},
+    {id:"f3",name:"Northgate Medical Center",setting:"Acute",city:"Cincinnati",state:"OH",contact:"Priya Natarajan",email:"priya.natarajan@example.com",feePct:3.5,mileage:0,budget:2400000,units:["Med/Surg 4W","ICU","Emergency","Telemetry"],
+      rates:{RN:R_("hour",105,115),CNA:R_("hour",36,39)}},
+    {id:"f4",name:"Riverbend Home Care",setting:"Home Health",city:"Louisville",state:"KY",contact:"Elena Ortiz",email:"elena.ortiz@example.com",feePct:4,mileage:0.70,budget:750000,units:["Field visits","Therapy"],
+      rates:{RN:R_("visit",80,88),LPN:R_("visit",60,64),PT:R_("visit",95,100),OT:R_("visit",92,98),ST:R_("visit",95,100)}}
   ];
   const vendors = [
     {id:"v1",name:"Summit Clinical Staffing",tier:1,status:"active",contact:"Rae Donnelly",email:"rae@example.com",docs:{coi:isoDay(240),wc:isoDay(190),msa:isoDay(300)}},
@@ -327,38 +407,51 @@ function buildDemo(){
     {id:"v4",name:"Keystone Travel Nursing",tier:2,status:"active",contact:"Will Brandt",email:"will@example.com",docs:{coi:isoDay(120),wc:isoDay(-9),msa:isoDay(330)}},
     {id:"v5",name:"Meridian Allied Health",tier:2,status:"active",contact:"Sasha Kim",email:"sasha@example.com",docs:{coi:isoDay(310),wc:isoDay(280),msa:isoDay(90)}}
   ];
-  // [facility, unit, discipline, specialty, shift, start (days from today), weeks, hrs/wk, bill rate, openings, tiers released, status, submittal stages]
+  // [facility, unit, discipline, specialty, shift, start (days from today), weeks, hrs or visits/wk, bill, openings, distribution, status, submittal stages]
   const R = [
-    ["f1","Field visits","RN","Home Health Case Manager",0,-40,13,40,78,2,1,"filled",["accepted","accepted","declined","withdrawn"]],
-    ["f3","ICU","RN","ICU",2,-26,13,36,112,1,2,"filled",["accepted","declined","declined"]],
-    ["f2","Field team","RN","Hospice Case Manager",0,-19,13,40,80,1,1,"filled",["accepted","declined"]],
-    ["f4","Therapy","PT","Home Health PT",0,-33,13,40,92,1,2,"filled",["accepted","withdrawn"]],
-    ["f3","Telemetry","RN","Telemetry",2,-12,13,36,98,2,2,"open",["accepted","offer","declined"]],
-    ["f2","Continuous care","LPN","Hospice Continuous Care",2,-5,8,36,56,1,1,"filled",["accepted"]],
-    ["f1","Wound care team","RN","Wound Care (WOCN)",0,6,13,40,84,1,1,"filled",["accepted","declined"]],
-    ["f3","Emergency","RN","Emergency",1,10,13,36,104,2,2,"open",["interview","shortlisted","submitted","submitted","declined"]],
-    ["f1","Field visits","LPN","Home Health LPN",0,14,13,40,54,1,1,"open",["offer","submitted"]],
-    ["f4","Field visits","RN","Home Health Visit RN",4,9,13,40,79,2,1,"open",["shortlisted","submitted","submitted"]],
-    ["f2","Inpatient unit","RN","Hospice Inpatient",2,21,13,36,88,1,2,"open",["interview","submitted"]],
-    ["f4","Therapy","OT","Home Health OT",0,17,13,40,90,1,2,"open",["submitted"]],
-    ["f1","Intake","RN","Intake / Admissions",0,7,8,40,76,1,1,"open",[]],
-    ["f3","Med/Surg 4W","CNA","Med/Surg",1,12,13,36,36,3,2,"open",["shortlisted","submitted","submitted","withdrawn"]],
-    ["f2","Field team","HHA","Hospice Aide",0,15,13,40,32,2,1,"open",["submitted","submitted"]],
-    ["f4","Therapy","ST","Speech Therapy",0,28,13,32,95,1,2,"hold",["interview"]],
-    ["f3","ICU","RN","ICU",1,35,13,36,114,1,1,"open",["submitted"]],
-    ["f1","Field visits","PTA","Home Health PTA",0,30,13,40,62,1,0,"draft",[]]
+    ["f1","Field visits","RN","Home Health Case Manager",0,-40,13,40,78,2,"t1","filled",["accepted","accepted","declined","withdrawn"]],
+    ["f3","ICU","RN","ICU",2,-26,13,36,112,1,"all","filled",["accepted","declined","declined"]],
+    ["f2","Field team","RN","Hospice Case Manager",0,-19,13,40,80,1,"t1","filled",["accepted","declined"]],
+    ["f4","Therapy","PT","Home Health PT",4,-33,13,25,95,1,"all","filled",["accepted","withdrawn"]],
+    ["f3","Telemetry","RN","Telemetry",2,-12,13,36,98,2,"all","open",["accepted","offer","declined"]],
+    ["f2","Continuous care","LPN","Hospice Continuous Care",2,-5,8,36,56,1,"t1","filled",["accepted"]],
+    ["f1","Wound care team","RN","Wound Care (WOCN)",0,6,13,40,84,1,"t1","filled",["accepted","declined"]],
+    ["f3","Emergency","RN","Emergency",1,10,13,36,104,2,"all","open",["interview","shortlisted","submitted","submitted","declined"]],
+    ["f1","Field visits","LPN","Home Health LPN",0,14,13,40,54,1,"d2","open",["offer","submitted"]],
+    ["f4","Field visits","RN","Home Health Visit RN",4,9,13,25,82,2,"t1","open",["shortlisted","submitted","submitted"]],
+    ["f2","Inpatient unit","RN","Hospice Inpatient",2,21,13,36,86,1,"all","open",["interview","submitted"]],
+    ["f4","Therapy","OT","Home Health OT",4,17,13,25,92,1,"all","open",["submitted"]],
+    ["f1","Intake","RN","Intake / Admissions",0,7,8,40,76,1,"t1","open",[]],
+    ["f3","Med/Surg 4W","CNA","Med/Surg",1,12,13,36,36,3,"all","open",["shortlisted","submitted","submitted","withdrawn"]],
+    ["f2","Field team","HHA","Hospice Aide",0,15,13,40,32,2,"t1","open",["submitted","submitted"]],
+    ["f4","Therapy","ST","Speech Therapy",4,28,13,20,95,1,"all","hold",["interview"]],
+    ["f3","ICU","RN","ICU",1,35,13,36,114,1,"t1","open",["submitted"]],
+    ["f1","Field visits","PTA","Home Health PTA",0,30,13,40,62,1,"t1","draft",[]],
+    ["f2","Field team","RN","Hospice On-Call RN",3,24,13,40,92,1,"t1","pending",[]],
+    ["f4","Field visits","LPN","Home Health LPN",4,26,13,25,60,1,"t1","pending",[]]
   ];
   const NAMES = ["Avery Coleman","Brianna Holt","Carlos Mendez","Danielle Price","Evan Fischer","Fatima Rahman","Grace Liu","Hector Alvarez","Imani Brooks","Jared Collins","Keisha Moore","Liam O'Connor","Maya Patel","Nathan Greer","Olivia Hart","Paulo Santos","Quinn Rivers","Rosa Delgado","Samuel Okoye","Tara Lindqvist","Uma Shah","Victor Ramos","Whitney Cole","Xavier Bryant","Yasmin Haddad","Zoe Mitchell","Aaron Pike","Bethany Rowe","Caleb Dunn","Diana Flores","Elijah Ward","Farah Nasser","Gavin Lowe","Hannah Brenner","Isaac Turner","Jasmine Ortiz","Kyle Morrison","Lauren Bishop"];
   const NOTES = ["8 yrs home health, OASIS-trained, own car.","Strong charting in HCHB. Available weekends.","Recent travel contract in a Level I trauma ED.","Bilingual English/Spanish. Prefers 13-week contracts.","Hospice-certified (CHPN). Comfortable with on-call."];
+  const FEEDBACK = ["Strong clinical answers and good rapport with the team.","Confident with our EMR. Wants weekday visits only.","Great with families. A little light on wound vac experience.","Solid. Asked good questions about productivity expectations."];
   let seed = 7; const rnd = () => (seed = (seed*9301+49297)%233280)/233280;
-  const reqs = [], subs = [], assigns = [];
+  const reqs = [], subs = [], assigns = [], activity = [];
+  // sample events dated today can't be later than now
+  const act = (at, who, text, ref) => { const t = Math.min(new Date(at).getTime(), Date.now()-(activity.length%50+1)*6e4); activity.push({id:"x"+activity.length,at:new Date(t).toISOString(),who,text,...ref}); };
+  const fName = id => facilities.find(f=>f.id===id).name, vName = id => vendors.find(v=>v.id===id).name;
   let n = 0;
-  R.forEach(([fid,unit,disc,spec,shift,startOff,weeks,hours,bill,openings,release,status,stages],i)=>{
+  R.forEach(([fid,unit,disc,spec,shift,startOff,weeks,hours,bill,openings,dist,status,stages],i)=>{
     const f = facilities.find(x=>x.id===fid);
-    const created = isoDay(Math.min(startOff-21, -3-(i%5)));
-    const q = {id:"r"+(i+1),no:1041+i,facilityId:fid,unit,discipline:disc,setting:f.setting,specialty:spec,shift:SHIFTS[shift],start:isoDay(startOff),weeks,hours,bill,openings,release,status,createdAt:created,notes:""};
+    const created = status==="pending" ? isoDay(-1-(i%2)) : isoDay(Math.min(startOff-21, -3-(i%5)));
+    const q = {id:"r"+(i+1),no:1041+i,facilityId:fid,unit,discipline:disc,setting:f.setting,specialty:spec,shift:SHIFTS[shift],start:isoDay(startOff),weeks,hours,
+      billUnit:f.rates[disc]?.unit||"hour",bill,openings,status,createdAt:created,notes:"",justification:"",release:0,tier2At:""};
+    if(status!=="draft" && status!=="pending") applyDist(q,dist,created);
+    if(spec==="Hospice On-Call RN"){ q.justification = "Weekend on-call coverage. Two local agencies quote above the rate card for nights and weekends."; q.notes = "Covers Fri 5p–Mon 8a on-call. Must live within 30 miles of Dayton."; }
+    if(i===12) q.tier2At = isoDay(1);
     reqs.push(q);
-    const pool = vendors.filter(v=>v.tier<=Math.max(release,1) && (THERAPY.includes(disc) ? ["v3","v5"].includes(v.id) : !["v3","v5"].includes(v.id)));
+    const ref = {col:"reqs",id:q.id,facilityId:fid};
+    act(created+"T09:00:00",fName(fid),`Submitted ${"REQ-"+q.no} (${disc} · ${spec}) for approval`,ref);
+    if(status!=="pending" && status!=="draft") act(created+"T13:30:00","SkyBridge",`Approved ${"REQ-"+q.no} and released it to ${dist==="all"?"all tiers":"Tier 1"}`,ref);
+    const pool = vendors.filter(v=>v.tier<=Math.max(q.release,1) && (THERAPY.includes(disc) ? ["v3","v5"].includes(v.id) : !["v3","v5"].includes(v.id)));
     stages.forEach((stage,k)=>{
       const v = pool[(i+k)%pool.length];
       const name = NAMES[n++ % NAMES.length];
@@ -367,32 +460,46 @@ function buildDemo(){
       const over = i===9 && k===2;
       const s = {id:"s"+n,reqId:q.id,vendorId:v.id,cand:{name,state:f.state,lic:`${disc}.${String(200000+Math.floor(rnd()*700000))}`,years:2+Math.floor(rnd()*14)},
         rate: over ? bill+3 : Math.max(bill-Math.floor(rnd()*4), 1),avail:q.start,notes:NOTES[n%NOTES.length],stage,submittedAt:sub,history:[{stage:"submitted",at:sub}]};
+      const sref = {col:"subs",id:s.id,facilityId:fid,vendorId:v.id};
+      act(sub+"T10:15:00",vName(v.id),`Submitted ${name} to REQ-${q.no}`,sref);
       const path = ["shortlisted","interview","offer","accepted"]; const upto = path.indexOf(stage);
       let d = sub;
-      for(let j=0;j<=upto;j++){ d = addDays(d,2); if(d>today()) d = today(); s.history.push({stage:path[j],at:d}); }
+      for(let j=0;j<=upto;j++){
+        d = addDays(d,2); if(d>today()) d = today();
+        s.history.push({stage:path[j],at:d});
+        act(d+"T11:"+pad(10+j*7)+":00",fName(fid),`Moved ${name} to ${STAGES.find(x=>x.id===path[j]).l.toLowerCase()} on REQ-${q.no}`,sref);
+      }
+      if(upto>=1){
+        s.interview = stage==="interview" ? {at:`${isoDay(1+k)}T${pad(10+k)}:00`,mode:MODES[k%3],with:f.contact} : {at:`${s.history[2].at}T10:00`,mode:MODES[(k+1)%3],with:f.contact};
+        if(upto>=2) s.feedback = {score:4+((i+k)%2),note:FEEDBACK[(i+k)%FEEDBACK.length],at:s.history[2].at};
+      }
       if(stage in CLOSED){ d = addDays(sub,3); if(d>today()) d = today(); s.history.push({stage,at:d}); }
       subs.push(s);
       if(stage==="accepted"){
         assigns.push({id:"a"+(assigns.length+1),subId:s.id,reqId:q.id,facilityId:fid,vendorId:v.id,worker:name,discipline:disc,title:`${disc} · ${spec}`,
-          start:q.start,end:addDays(q.start,weeks*7-1),bill:s.rate,hours,status:"booked",
-          creds:{license:isoDay(420),bls:isoDay(300),tb:isoDay(200),physical:isoDay(260),background:isoDay(330)}});
+          start:q.start,end:addDays(q.start,weeks*7-1),bill:s.rate,unit:q.billUnit,hours,status:"booked",
+          creds:{license:isoDay(420),bls:isoDay(300),tb:isoDay(200),physical:isoDay(260),background:isoDay(330)},
+          tasks:Object.fromEntries(ONBOARD.map(o=>[o.id,true]))});
       }
     });
   });
-  // a few credential problems so the dashboard has something to flag
+  // a few credential and onboarding gaps so the dashboard has something to flag
   assigns[2].creds.tb = isoDay(-6);
   assigns[4].creds.bls = isoDay(12);
   assigns[7].creds.license = ""; assigns[7].creds.physical = "";
+  assigns[7].tasks = {orientation:true,emr:false,badge:false,drug:true};
 
-  const PATTERN = {40:[0,8,8,8,8,8,0],36:[0,12,12,0,12,0,0],32:[0,8,8,8,8,0,0]};
+  const PATTERN = {40:[0,8,8,8,8,8,0],36:[0,12,12,0,12,0,0],25:[0,5,5,5,5,5,0],20:[0,4,4,4,4,4,0]};
   const timesheets = [], invoices = [];
   const weeks = [lastSaturday(2), lastSaturday(1), lastSaturday(0)];
   weeks.forEach((wk,wi)=>{
     assigns.forEach((a,ai)=>{
       if(addDays(wk,-6) < a.start) return;
+      const f = facilities.find(x=>x.id===a.facilityId);
       const hours = [...(PATTERN[a.hours]||PATTERN[40])];
       if(ai===1 && wi===1) hours[6] = 8;
-      const t = {id:`t${wi}${ai}`,assignId:a.id,week:wk,hours,status: wi<2 ? "approved" : "submitted",submittedAt:addDays(wk,1),invoiceId:null,reason:""};
+      const t = {id:`t${wi}${ai}`,assignId:a.id,week:wk,hours,miles:f.mileage ? 140+Math.round(rnd()*120) : 0,other:ai===2&&wi===0 ? 36 : 0,otherDesc:ai===2&&wi===0 ? "Hospital parking" : "",
+        status: wi<2 ? "approved" : "submitted",submittedAt:addDays(wk,1),invoiceId:null,reason:""};
       if(wi===2 && ai===3){ t.status = "rejected"; t.reason = "Thursday visit notes aren't signed. Please attach the signed visit log and resubmit."; }
       timesheets.push(t);
     });
@@ -402,20 +509,23 @@ function buildDemo(){
   facilities.forEach((f,fi)=>{
     const ts = timesheets.filter(t=>t.week===weeks[0] && assigns.find(a=>a.id===t.assignId).facilityId===f.id);
     if(!ts.length) return;
-    const i = {id:"i"+inv,no:inv,facilityId:f.id,createdAt:addDays(weeks[0],3),feePct:f.feePct,status:fi===0?"paid":"sent",lines:ts.map(t=>lineFor(t,assigns.find(a=>a.id===t.assignId)))};
-    i.total = sum(i.lines.map(l=>l.amount));
+    const i = {id:"i"+inv,no:inv,facilityId:f.id,createdAt:addDays(weeks[0],3),feePct:f.feePct,status:fi===0?"paid":"sent",lines:ts.map(t=>lineFor(t,assigns.find(a=>a.id===t.assignId),f.mileage))};
+    totalInvoice(i);
     ts.forEach(t=>t.invoiceId=i.id);
-    invoices.push(i); inv++;
+    invoices.push(i);
+    act(i.createdAt+"T08:00:00","SkyBridge",`Created INV-${i.no} for ${f.name} (${usd(i.total)})`,{col:"invoices",id:i.id,facilityId:f.id});
+    inv++;
   });
-  return {facilities,vendors,reqs,subs,assigns,timesheets,invoices};
+  activity.sort((a,b)=>b.at.localeCompare(a.at));
+  return {facilities,vendors,reqs,subs,assigns,timesheets,invoices,activity};
 }
 
 /* =========================================================
    State + storage
    ========================================================= */
 const blank = () => Object.fromEntries(COLS.map(c=>[c,[]]));
-const S = {mode:"local", db:null, uid:null, admin:true, real:blank(), demo:null, demoPref:null, downloads:null, role:SS.get("sbvms.role","admin"), as:SS.get("sbvms.as","")};
-const hasReal = () => COLS.some(c=>S.real[c].length);
+const S = {mode:"local", db:null, uid:null, admin:true, real:blank(), demo:null, demoPref:null, downloads:null, sample:null, role:SS.get("sbvms.role","admin"), as:SS.get("sbvms.as","")};
+const hasReal = () => COLS.some(c=>c!=="activity" && S.real[c].length);
 const demoOn = () => S.demoPref ?? !hasReal();
 const D = () => demoOn() ? S.demo : S.real;
 const byId = (col, id) => D()[col].find(x=>x.id===id);
@@ -426,9 +536,11 @@ const Store = {
     if(demoOn()){ upsert(S.demo[col],doc); render(); return true; }
     if(S.mode==="shared"){
       try{ await S.db.doc(col+"/"+doc.id).set(doc); return true; }
-      catch(e){ toast("That change wasn't saved. Your access to this page may be view-only."); return false; }
+      catch(e){ if(col!=="activity") toast("That change wasn't saved. Your access to this page may be view-only."); return false; }
     }
-    upsert(S.real[col],doc); LS.set("sbvms."+col,S.real[col]); render(); return true;
+    if(col==="activity") S.real.activity = [doc,...S.real.activity].slice(0,500);
+    else upsert(S.real[col],doc);
+    LS.set("sbvms."+col,S.real[col]); render(); return true;
   },
   async del(col, id){
     if(demoOn()){ S.demo[col] = S.demo[col].filter(x=>x.id!==id); render(); return true; }
@@ -439,6 +551,11 @@ const Store = {
     S.real[col] = S.real[col].filter(x=>x.id!==id); LS.set("sbvms."+col,S.real[col]); render(); return true;
   }
 };
+// Every change leaves a line in the activity log, tagged so each facility and vendor sees only its own.
+function log(text, ref={}){
+  const e = {id:newId(),at:new Date().toISOString(),who:who(),text,...ref};
+  if(demoOn()){ S.demo.activity.unshift(e); render(); } else Store.put("activity",e);
+}
 
 async function connect(){
   COLS.forEach(c=>{ S.real[c] = LS.get("sbvms."+c,[]); });
@@ -446,13 +563,14 @@ async function connect(){
   if(!window.claude || !window.claude.use) return;
   try{
     claude.use("downloads").then(d=>{ S.downloads = d; }).catch(()=>{});
+    claude.use("sample").then(fn=>{ S.sample = fn; render(); }).catch(()=>{});
     const [db,user] = await Promise.all([claude.use("db"), claude.use("user")]);
     if(!db || !user) return;
     const uid = await user.id();
     if(!uid) return;
     const [owner,edit] = await Promise.all([user.isOwner(), user.canEdit()]);
     Object.assign(S,{mode:"shared",db,uid,admin:owner||edit,real:blank()});
-    COLS.forEach(c=>db.collection(c).onSnapshot(snap=>{ S.real[c] = snap.docs.map(d=>d.data()); render(); }, ()=>{}));
+    COLS.forEach(c=>db.collection(c).onSnapshot(snap=>{ S.real[c] = snap.docs.map(d=>d.data()); if(c==="activity") S.real.activity.sort((a,b)=>b.at.localeCompare(a.at)); render(); }, ()=>{}));
     render();
   }catch(e){ /* stay local */ }
 }
@@ -460,37 +578,47 @@ async function connect(){
 /* =========================================================
    Who's looking, and what they can see and do
    ========================================================= */
-const openTo = (q, v) => !!v && v.status==="active" && q.status==="open" && v.tier <= (q.release||0);
+function applyDist(q, dist, from=today()){
+  q.release = dist==="all" ? 2 : 1;
+  q.tier2At = /^d\d$/.test(dist) ? addDays(from, +dist.slice(1)) : "";
+  q.dist = dist;
+  return q;
+}
+const releaseNow = q => Math.max(q.release||0, q.tier2At && today()>=q.tier2At ? 2 : 0);
+const openTo = (q, v) => !!v && v.status==="active" && q.status==="open" && v.tier <= releaseNow(q);
 function ensureAs(){
   const d = D();
   if(S.role==="facility" && !d.facilities.some(f=>f.id===S.as)) S.as = d.facilities[0]?.id || "";
   if(S.role==="vendor" && !d.vendors.some(v=>v.id===S.as)) S.as = d.vendors[0]?.id || "";
   if((S.role==="facility" || S.role==="vendor") && !S.as) S.role = "admin";
 }
+const who = () => S.role==="facility" ? facName(S.as) : S.role==="vendor" ? venName(S.as) : "SkyBridge";
 function scope(){
   const d = D();
   if(S.role==="facility"){
     const reqs = d.reqs.filter(q=>q.facilityId===S.as), rs = new Set(reqs.map(q=>q.id));
     const assigns = d.assigns.filter(a=>a.facilityId===S.as), as = new Set(assigns.map(a=>a.id));
-    return {...d, reqs, subs:d.subs.filter(s=>rs.has(s.reqId)), assigns, timesheets:d.timesheets.filter(t=>as.has(t.assignId)), invoices:d.invoices.filter(i=>i.facilityId===S.as)};
+    return {...d, reqs, subs:d.subs.filter(s=>rs.has(s.reqId)), assigns, timesheets:d.timesheets.filter(t=>as.has(t.assignId)),
+      invoices:d.invoices.filter(i=>i.facilityId===S.as), activity:d.activity.filter(e=>e.facilityId===S.as)};
   }
   if(S.role==="vendor"){
     const v = d.vendors.find(x=>x.id===S.as);
     const subs = d.subs.filter(s=>s.vendorId===S.as), mine = new Set(subs.map(s=>s.reqId));
     const assigns = d.assigns.filter(a=>a.vendorId===S.as), as = new Set(assigns.map(a=>a.id));
-    return {...d, reqs:d.reqs.filter(q=>mine.has(q.id) || openTo(q,v)), subs, assigns, timesheets:d.timesheets.filter(t=>as.has(t.assignId)), invoices:[]};
+    return {...d, reqs:d.reqs.filter(q=>mine.has(q.id) || openTo(q,v)), subs, assigns, timesheets:d.timesheets.filter(t=>as.has(t.assignId)),
+      invoices:[], activity:d.activity.filter(e=>e.vendorId===S.as)};
   }
   return d;
 }
 const can = {
   postReq: () => S.role!=="vendor",
-  release: () => S.role==="admin",
+  approve: () => S.role==="admin",
   submit:  () => S.role!=="facility",
   review:  () => S.role!=="vendor",
   creds:   () => S.role!=="facility",
   manage:  () => S.role!=="vendor",
   enterTime: () => S.role!=="facility",
-  approve: () => S.role!=="vendor",
+  approveTime: () => S.role!=="vendor",
   invoice: () => S.role==="admin",
   partners: () => S.role==="admin"
 };
@@ -508,12 +636,21 @@ const stageLabel = id => STAGES.find(s=>s.id===id)?.l || CLOSED[id] || id;
 const nextStage = id => { const i = STAGES.findIndex(s=>s.id===id); return i>=0 && i<STAGES.length-1 ? STAGES[i+1].id : null; };
 const lastMove = s => (s.history||[]).at(-1)?.at || s.submittedAt;
 const nextNo = (col, start) => Math.max(start-1, ...D()[col].map(x=>x.no||0)) + 1;
+const cardFor = (fid, disc) => byId("facilities",fid)?.rates?.[disc] || null;
+const overCard = q => { const c = cardFor(q.facilityId,q.discipline); return !!(c && c.max && q.bill>c.max && (c.unit||"hour")===(q.billUnit||"hour")); };
+const unitOf = q => q?.billUnit || q?.unit || "hour";
+const estCost = q => q.bill*q.hours*q.weeks*q.openings;
 
 function reqChip(q){
   return {open:`<span class="chip good"><span class="dot"></span>Open</span>`, filled:`<span class="chip brand"><span class="dot"></span>Filled</span>`,
-    draft:`<span class="chip">Draft</span>`, hold:`<span class="chip warn"><span class="dot"></span>On hold</span>`, closed:`<span class="chip">Closed</span>`}[q.status] || esc(q.status);
+    draft:`<span class="chip">${q.returnNote?"Sent back":"Draft"}</span>`, pending:`<span class="chip warn"><span class="dot"></span>Waiting for approval</span>`,
+    hold:`<span class="chip warn"><span class="dot"></span>On hold</span>`, closed:`<span class="chip">Closed</span>`}[q.status] || esc(q.status);
 }
-const releaseLabel = q => q.status==="draft" || !q.release ? "Not released" : q.release>=2 ? "All tiers" : "Tier 1";
+function releaseLabel(q){
+  if(q.status==="draft" || q.status==="pending" || !q.release) return "Not released";
+  if(releaseNow(q)>=2) return "All tiers";
+  return q.tier2At ? `Tier 1 · all tiers ${fmtD(q.tier2At)}` : "Tier 1 only";
+}
 function stageChip(s){
   const cls = s.stage==="accepted" ? "good" : s.stage in CLOSED ? "" : s.stage==="offer" ? "brand" : "warn";
   return `<span class="chip sm ${cls}">${esc(stageLabel(s.stage))}</span>`;
@@ -528,37 +665,74 @@ function dateState(iso, soon=30){
 function credChips(a){
   return `<div class="creds">${CREDS.map(c=>{ const st = dateState(a.creds?.[c.id]); return `<span class="chip sm ${st.cls}" data-tip="${esc(c.l+": "+st.t)}">${esc(c.l)}</span>`; }).join("")}</div>`;
 }
-const lower1 = t => t.charAt(0).toLowerCase()+t.slice(1);
 const credIssues = a => CREDS.filter(c=>dateState(a.creds?.[c.id]).cls!=="good");
+const tasksLeft = a => ONBOARD.filter(o=>!a.tasks?.[o.id]);
+// Cleared to start: every credential valid on the first day, and every onboarding task done.
+const cleared = a => CREDS.every(c=>a.creds?.[c.id] && a.creds[c.id] >= (a.start>today()?a.start:today())) && !tasksLeft(a).length;
 const isLive = a => a.status!=="cancelled" && a.status!=="ended" && a.end >= today();
 function assignChip(a){
   if(a.status==="cancelled") return `<span class="chip">Cancelled</span>`;
   if(a.status==="ended" || a.end < today()) return `<span class="chip">Completed</span>`;
-  if(a.start > today()) return `<span class="chip brand"><span class="dot"></span>Starts ${fmtD(a.start)}</span>`;
+  if(a.start > today()) return cleared(a) ? `<span class="chip good"><span class="dot"></span>Cleared · starts ${fmtD(a.start)}</span>` : `<span class="chip warn"><span class="dot"></span>Not cleared · starts ${fmtD(a.start)}</span>`;
   return `<span class="chip good"><span class="dot"></span>Active</span>`;
 }
-function tsMath(t, a){
-  const total = sum(t.hours), reg = Math.min(total,OT_AFTER), ot = Math.max(0,total-OT_AFTER);
+function tsMath(t, a, mileRate){
+  const unit = unitOf(a), total = sum(t.hours);
+  const reg = unit==="visit" ? total : Math.min(total,OT_AFTER), ot = unit==="visit" ? 0 : Math.max(0,total-OT_AFTER);
   const bill = a?.bill || 0;
-  return {total, reg, ot, amount: reg*bill + ot*bill*OT_MULT};
+  const rateM = mileRate ?? (byId("facilities",a?.facilityId)?.mileage ?? DEFAULT_MILEAGE);
+  const labor = reg*bill + ot*bill*OT_MULT, mileage = (+t.miles||0)*rateM, other = +t.other||0;
+  return {unit, total, reg, ot, labor, miles:+t.miles||0, mileage, other, expenses:mileage+other, amount:labor+mileage+other};
 }
-function lineFor(t, a){ const m = tsMath(t,a); return {tsId:t.id,worker:a.worker,title:a.title,vendorId:a.vendorId,week:t.week,reg:m.reg,ot:m.ot,bill:a.bill,amount:m.amount}; }
+function lineFor(t, a, mileRate){
+  const m = tsMath(t,a,mileRate);
+  return {tsId:t.id,worker:a.worker,title:a.title,vendorId:a.vendorId,discipline:a.discipline,week:t.week,unit:m.unit,reg:m.reg,ot:m.ot,bill:a.bill,labor:m.labor,miles:m.miles,mileage:m.mileage,other:m.other,otherDesc:t.otherDesc||"",amount:m.amount};
+}
+function totalInvoice(i){
+  i.labor = sum(i.lines.map(l=>l.labor ?? l.amount));
+  i.expenses = sum(i.lines.map(l=>(l.mileage||0)+(l.other||0)));
+  i.total = i.labor + i.expenses;
+  return i;
+}
+const feeOf = i => (i.labor ?? i.total)*(i.feePct||0)/100;
+// The VMS fee comes out of labor only; expenses pass through to the vendor in full.
+function vendorShare(i, vid){
+  const ls = i.lines.filter(l=>!vid || l.vendorId===vid);
+  return sum(ls.map(l=>(l.labor ?? l.amount)*(1-(i.feePct||0)/100) + (l.mileage||0) + (l.other||0)));
+}
 function tsChip(t){
   if(t.invoiceId) return `<span class="chip sm brand">Invoiced</span>`;
   return {submitted:`<span class="chip sm warn">Waiting for approval</span>`, approved:`<span class="chip sm good">Approved</span>`, rejected:`<span class="chip sm bad">Sent back</span>`}[t.status] || "";
 }
 function invChip(i){ return {draft:`<span class="chip sm">Draft</span>`, sent:`<span class="chip sm warn">Sent</span>`, paid:`<span class="chip sm good">Paid</span>`}[i.status] || ""; }
-const vendorShare = (i, vid) => sum(i.lines.filter(l=>!vid || l.vendorId===vid).map(l=>l.amount)) * (1 - (i.feePct||0)/100);
+const unitsTxt = (n, unit) => unit==="visit" ? plural(n,"visit") : `${n} hrs`;
+
+/* =========================================================
+   Claude (only when the page runs as a published artifact)
+   ========================================================= */
+function aiError(e){
+  return {not_granted:"Claude wasn't allowed for this page, so it can't help here.", rate_limited:"Too many requests right now. Try again in a minute.", cancelled:""}[e?.code] ?? "Claude couldn't answer that. Try again.";
+}
+async function aiStream(prompt, out, btn){
+  if(!S.sample) return;
+  btn && (btn.disabled = true);
+  out.hidden = false; out.innerHTML = `<span class="spin"></span> Thinking…`;
+  try{
+    const {text} = await S.sample(prompt,{onText:({text})=>{ out.textContent = text; }});
+    out.textContent = text;
+  }catch(e){ out.textContent = e?.text || aiError(e); }
+  finally{ btn && (btn.disabled = false); }
+}
 
 /* =========================================================
    Tabs + render
    ========================================================= */
-const TABS = ["dash","reqs","subs","assign","time","inv","partners"];
+const TABS = ["dash","reqs","subs","assign","time","inv","reports","partners"];
 let tab = null;
-const F = {reqStatus:"open", reqQ:"", reqDisc:"", subQ:"", subFac:"", asg:"live", ts:"open", inv:"all"};
+const F = {reqStatus:"open", reqQ:"", reqDisc:"", subQ:"", subFac:"", asg:"live", ts:"open", inv:"all", period:"ytd", actN:15};
 function allowedTabs(){
   if(S.role==="vendor") return ["dash","reqs","subs","assign","time"];
-  if(S.role==="facility") return ["dash","reqs","subs","assign","time","inv"];
+  if(S.role==="facility") return ["dash","reqs","subs","assign","time","inv","reports"];
   return TABS;
 }
 function showTab(name){
@@ -585,15 +759,16 @@ function render(){
   else { m.className="chip"; m.innerHTML=`<span class="dot"></span>Saved in this browser`; }
   TABS.forEach(t=>{ $("t-"+t).hidden = !allowedTabs().includes(t); });
   const badge = (t, n) => { const b = $("t-"+t); b.querySelector(".badge")?.remove(); if(n) b.insertAdjacentHTML("beforeend",`<span class="badge">${n}</span>`); };
+  badge("reqs", can.approve() ? sc.reqs.filter(q=>q.status==="pending").length : S.role==="facility" ? sc.reqs.filter(q=>q.status==="draft" && q.returnNote).length : 0);
   badge("subs", can.review() ? sc.subs.filter(s=>s.stage==="submitted").length : 0);
-  badge("time", can.approve() ? sc.timesheets.filter(t=>t.status==="submitted").length : sc.timesheets.filter(t=>t.status==="rejected").length);
+  badge("time", can.approveTime() ? sc.timesheets.filter(t=>t.status==="submitted").length : sc.timesheets.filter(t=>t.status==="rejected").length);
   if(!allowedTabs().includes(tab)) return showTab(allowedTabs()[0]);
   renderTab();
 }
 function renderTab(){
   // keep focus and caret in a search box across re-renders
   const a = document.activeElement, fid = a && a.id && $("p-"+tab)?.contains(a) ? a.id : null, caret = fid && a.selectionStart;
-  ({dash:renderDash, reqs:renderReqs, subs:renderSubs, assign:renderAssign, time:renderTime, inv:renderInv, partners:renderPartners})[tab]();
+  ({dash:renderDash, reqs:renderReqs, subs:renderSubs, assign:renderAssign, time:renderTime, inv:renderInv, reports:renderReports, partners:renderPartners})[tab]();
   if(fid && $(fid)){ $(fid).focus(); try{ $(fid).setSelectionRange(caret,caret); }catch(e){} }
 }
 function scopeLabel(){
@@ -613,7 +788,7 @@ function renderDash(){
   }
   const live = sc.reqs.filter(q=>q.status==="open");
   const openPos = sum(live.map(q=>Math.max(0,q.openings-accepted(q))));
-  const counted = sc.reqs.filter(q=>q.status!=="draft");
+  const counted = sc.reqs.filter(q=>!["draft","pending"].includes(q.status));
   const totalPos = sum(counted.map(q=>q.openings)), filledPos = sum(counted.map(q=>Math.min(q.openings,accepted(q))));
   const fill = totalPos ? Math.round(filledPos/totalPos*100) : 0;
   const working = sc.assigns.filter(a=>isLive(a) && a.start<=today()).length;
@@ -625,7 +800,7 @@ function renderDash(){
   if(S.role==="vendor") tiles.push({tab:"subs",e:"Candidates in play",v:sc.subs.filter(s=>activeStage(s) && s.stage!=="accepted").length,s:`${sc.subs.filter(s=>s.stage==="offer").length} with an offer`});
   else tiles.push({tab:"subs",e:"Submittals to review",v:sc.subs.filter(s=>s.stage==="submitted").length,s:`${sc.subs.filter(s=>s.stage==="interview").length} in interview`});
   tiles.push({tab:"assign",e:"Clinicians working",v:working,s:`${starting} starting soon`});
-  if(can.approve()) tiles.push({tab:"time",e:"Timesheets to approve",v:sc.timesheets.filter(t=>t.status==="submitted").length,s:"submitted by vendors"});
+  if(can.approveTime()) tiles.push({tab:"time",e:"Timesheets to approve",v:sc.timesheets.filter(t=>t.status==="submitted").length,s:"submitted by vendors"});
   else tiles.push({tab:"time",e:"Timesheets sent back",v:sc.timesheets.filter(t=>t.status==="rejected").length,s:"need a fix"});
   if(S.role==="vendor"){
     const earned = sum(D().invoices.filter(i=>i.createdAt.startsWith(month)).map(i=>vendorShare(i,S.as)));
@@ -637,38 +812,45 @@ function renderDash(){
 
   // what needs attention, worst first
   const items = [];
+  if(can.approve()) sc.reqs.filter(q=>q.status==="pending").forEach(q=>items.push({sev:"warn",rank:-50,html:`<b>${esc(reqNo(q))}</b> is waiting for your approval${overCard(q)?" (over the rate card)":""}<span class="sub2">${esc(reqTitle(q))} at ${esc(facName(q.facilityId))} · ${usd0(estCost(q))} estimated</span>`,act:"req-view",id:q.id}));
+  if(S.role==="facility") sc.reqs.filter(q=>q.status==="draft" && q.returnNote).forEach(q=>items.push({sev:"warn",rank:-40,html:`<b>${esc(reqNo(q))}</b> was sent back: ${esc(q.returnNote)}`,act:"req-view",id:q.id}));
   sc.assigns.filter(isLive).forEach(a=>credIssues(a).forEach(c=>{
     const st = dateState(a.creds?.[c.id]);
-    items.push({sev:st.cls==="bad"?"bad":"warn",rank:st.n,html:`<b>${esc(a.worker)}</b>: ${esc(c.l)} ${st.cls==="bad" && !a.creds?.[c.id] ? "is missing" : esc(lower1(st.t))}<span class="sub2">${esc(a.title)} at ${esc(facName(a.facilityId))}</span>`,tab:"assign"});
+    items.push({sev:st.cls==="bad"?"bad":"warn",rank:st.n,html:`<b>${esc(a.worker)}</b>: ${esc(c.l)} ${!a.creds?.[c.id] ? "is missing" : esc(lower1(st.t))}<span class="sub2">${esc(a.title)} at ${esc(facName(a.facilityId))}</span>`,act:"asg-onboard",id:a.id});
   }));
+  sc.assigns.filter(a=>isLive(a) && a.start>today() && tasksLeft(a).length).forEach(a=>items.push({sev:daysUntil(a.start)<=7?"bad":"warn",rank:daysUntil(a.start),html:`<b>${esc(a.worker)}</b> starts ${fmtD(a.start)} with ${plural(tasksLeft(a).length,"onboarding task")} open<span class="sub2">${esc(tasksLeft(a).map(t=>t.l).join(", "))}</span>`,act:"asg-onboard",id:a.id}));
   sc.reqs.filter(q=>q.status==="open").forEach(q=>{
     const n = daysUntil(q.start), subs = D().subs.filter(s=>s.reqId===q.id && activeStage(s)).length;
-    if(n<=14 && subs===0) items.push({sev:"bad",rank:n,html:`<b>${esc(reqNo(q))}</b> starts ${n<0?"overdue":n===0?"today":"in "+plural(n,"day")} with no candidates<span class="sub2">${esc(reqTitle(q))} at ${esc(facName(q.facilityId))}</span>`,tab:"reqs"});
+    if(n<=14 && subs===0) items.push({sev:"bad",rank:n,html:`<b>${esc(reqNo(q))}</b> starts ${n<0?"overdue":n===0?"today":"in "+plural(n,"day")} with no candidates<span class="sub2">${esc(reqTitle(q))} at ${esc(facName(q.facilityId))} · ${esc(releaseLabel(q))}</span>`,act:"req-view",id:q.id});
   });
   sc.subs.filter(s=>activeStage(s) && s.stage!=="accepted").forEach(s=>{
     const q = byId("reqs",s.reqId);
-    if(q && s.rate>q.bill) items.push({sev:"warn",rank:0,html:`<b>${esc(s.cand.name)}</b> is submitted at ${rate(s.rate)}, above the ${rate(q.bill)} bill rate<span class="sub2">${esc(reqNo(q))} · ${esc(venName(s.vendorId))}</span>`,tab:"subs"});
+    if(q && s.rate>q.bill) items.push({sev:"warn",rank:0,html:`<b>${esc(s.cand.name)}</b> is submitted at ${rateU(s.rate,unitOf(q))}, above the ${rateU(q.bill,unitOf(q))} bill rate<span class="sub2">${esc(reqNo(q))} · ${esc(venName(s.vendorId))}</span>`,act:"go",tab:"subs"});
   });
+  if(can.review()) sc.subs.filter(s=>s.stage==="interview" && s.interview?.at && new Date(s.interview.at)<new Date() && !s.feedback).forEach(s=>items.push({sev:"info",rank:1,html:`Add interview feedback for <b>${esc(s.cand.name)}</b><span class="sub2">Interviewed ${esc(fmtDT(s.interview.at))}</span>`,act:"sub-feedback",id:s.id}));
   const pend = sc.timesheets.filter(t=>t.status==="submitted").length;
-  if(can.approve() && pend) items.push({sev:"info",rank:5,html:`<b>${plural(pend,"timesheet")}</b> waiting for approval`,tab:"time"});
+  if(can.approveTime() && pend) items.push({sev:"info",rank:5,html:`<b>${plural(pend,"timesheet")}</b> waiting for approval`,act:"go",tab:"time"});
   const back = sc.timesheets.filter(t=>t.status==="rejected").length;
-  if(can.enterTime() && back) items.push({sev:"warn",rank:2,html:`<b>${plural(back,"timesheet")}</b> sent back for a fix`,tab:"time"});
+  if(can.enterTime() && back) items.push({sev:"warn",rank:2,html:`<b>${plural(back,"timesheet")}</b> sent back for a fix`,act:"go",tab:"time"});
   if(S.role!=="facility"){
     D().vendors.filter(v=>v.status==="active" && (S.role==="admin" || v.id===S.as)).forEach(v=>VDOCS.forEach(doc=>{
       const st = dateState(v.docs?.[doc.id],45);
-      if(st.cls!=="good") items.push({sev:st.cls==="bad"?"bad":"warn",rank:st.n,html:`<b>${esc(v.name)}</b>: ${esc(doc.l)} ${!v.docs?.[doc.id] ? "is missing" : esc(lower1(st.t))}`,tab:S.role==="admin"?"partners":"dash"});
+      if(st.cls!=="good") items.push({sev:st.cls==="bad"?"bad":"warn",rank:st.n,html:`<b>${esc(v.name)}</b>: ${esc(doc.l)} ${!v.docs?.[doc.id] ? "is missing" : esc(lower1(st.t))}`,act:S.role==="admin"?"ven-edit":null,id:v.id});
     }));
   }
   if(can.invoice()){
     const ready = D().timesheets.filter(t=>t.status==="approved" && !t.invoiceId).length;
-    if(ready) items.push({sev:"info",rank:6,html:`<b>${plural(ready,"approved timesheet")}</b> ready to invoice`,tab:"inv"});
+    if(ready) items.push({sev:"info",rank:6,html:`<b>${plural(ready,"approved timesheet")}</b> ready to invoice`,act:"go",tab:"inv"});
   }
   const order = {bad:0,warn:1,info:2};
   items.sort((a,b)=>order[a.sev]-order[b.sev] || a.rank-b.rank);
+  const itemBtn = i => i.act ? `<button class="btn sm ghost" data-act="${i.act}" ${i.id?`data-id="${esc(i.id)}"`:""} ${i.tab?`data-tab="${i.tab}"`:""}>Open</button>` : "<span></span>";
 
-  // pipeline
+  // pipeline + interviews
   const counts = STAGES.map(s=>({...s,n:sc.subs.filter(x=>x.stage===s.id).length}));
   const maxN = Math.max(1,...counts.map(c=>c.n));
+  const now = new Date(), week = new Date(Date.now()+7*864e5);
+  const upcoming = sc.subs.filter(s=>s.stage==="interview" && s.interview?.at && new Date(s.interview.at)>=now && new Date(s.interview.at)<=week).sort((a,b)=>a.interview.at.localeCompare(b.interview.at));
 
   // vendor scorecard
   let score = "";
@@ -679,16 +861,17 @@ function renderDash(){
       const reachedInterview = vs.filter(s=>(s.history||[]).some(h=>["interview","offer","accepted"].includes(h.stage))).length;
       const hires = vs.filter(s=>s.stage==="accepted").length;
       const days = vs.map(s=>{ const q = byId("reqs",s.reqId); return q ? daysBetween(q.createdAt,s.submittedAt) : null; }).filter(x=>x!=null);
+      const scores = vs.map(s=>s.feedback?.score).filter(Boolean);
       const vsBill = avg(vs.map(s=>{ const q = byId("reqs",s.reqId); return q ? s.rate - q.bill : 0; }));
-      return {v,n:vs.length,iv:Math.round(reachedInterview/vs.length*100),hires,days:avg(days),diff:vsBill};
+      return {v,n:vs.length,iv:Math.round(reachedInterview/vs.length*100),hires,days:avg(days),score:avg(scores),diff:vsBill};
     }).filter(Boolean).sort((a,b)=>b.hires-a.hires || b.iv-a.iv);
     const fillDays = sc.subs.filter(s=>s.stage==="accepted").map(s=>{ const q = byId("reqs",s.reqId); const h = (s.history||[]).find(x=>x.stage==="accepted"); return q && h ? daysBetween(q.createdAt,h.at) : null; }).filter(x=>x!=null);
     const firstSub = sc.reqs.map(q=>{ const ds = D().subs.filter(s=>s.reqId===q.id).map(s=>s.submittedAt).sort(); return ds.length ? daysBetween(q.createdAt,ds[0]) : null; }).filter(x=>x!=null);
     score = `<div class="card stack">
       <div class="head-row"><div><h3>Vendor scorecard</h3><p class="muted small">How each agency performs on ${S.role==="facility" ? "your requisitions" : "all requisitions"}.</p></div>
       <div class="row small"><span class="chip">Avg ${avg(firstSub)==null?"–":avg(firstSub).toFixed(1)} days to first submittal</span><span class="chip">Avg ${avg(fillDays)==null?"–":avg(fillDays).toFixed(1)} days to fill</span></div></div>
-      ${rows.length ? `<div class="tbl"><table><thead><tr><th>Vendor</th><th>Tier</th><th class="n">Submittals</th><th class="n">Reached interview</th><th class="n">Hires</th><th class="n">Days to submit</th><th class="n">Rate vs bill</th></tr></thead><tbody>
-      ${rows.map(r=>`<tr><td><b>${esc(r.v.name)}</b></td><td class="nw">Tier ${r.v.tier}</td><td class="n">${r.n}</td><td class="n">${r.iv}%</td><td class="n">${r.hires}</td><td class="n">${r.days==null?"–":r.days.toFixed(1)}</td><td class="n">${r.diff>0?"+":""}${usd(r.diff)}</td></tr>`).join("")}
+      ${rows.length ? `<div class="tbl"><table><thead><tr><th>Vendor</th><th>Tier</th><th class="n">Submittals</th><th class="n">Reached interview</th><th class="n">Interview score</th><th class="n">Hires</th><th class="n">Days to submit</th><th class="n">Rate vs bill</th></tr></thead><tbody>
+      ${rows.map(r=>`<tr><td><b>${esc(r.v.name)}</b></td><td class="nw">Tier ${r.v.tier}</td><td class="n">${r.n}</td><td class="n">${r.iv}%</td><td class="n">${r.score==null?"–":r.score.toFixed(1)+" / 5"}</td><td class="n">${r.hires}</td><td class="n">${r.days==null?"–":r.days.toFixed(1)}</td><td class="n">${r.diff>0?"+":""}${usd(r.diff)}</td></tr>`).join("")}
       </tbody></table></div>` : `<p class="muted small">No submittals yet.</p>`}
     </div>`;
   }
@@ -696,14 +879,20 @@ function renderDash(){
   el.innerHTML = `
     <div class="head-row"><div><h2>Dashboard</h2><p class="muted small">${esc(scopeLabel())} · ${new Date().toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})}</p></div></div>
     <div class="kpis">${tiles.map(t=>`<button class="kpi" data-act="go" data-tab="${t.tab}"><span class="eyebrow">${esc(t.e)}</span><span class="v">${t.v}</span><span class="s">${esc(t.s)}</span>${t.meter!=null?`<span class="meter"><span style="width:${t.meter}%"></span></span>`:""}</button>`).join("")}</div>
-    <div class="grid2">
+    <div class="split">
       <div class="card stack-s">
         <h3>Needs attention</h3>
-        ${items.length ? `<div class="alist">${items.slice(0,9).map(i=>`<div class="aitem"><span class="sev ${i.sev}" aria-hidden="true"></span><div>${i.html}</div><button class="btn sm ghost" data-act="go" data-tab="${i.tab}">Open</button></div>`).join("")}</div>${items.length>9?`<p class="muted tiny">And ${items.length-9} more.</p>`:""}` : `<p class="muted small">Nothing needs attention right now.</p>`}
+        ${items.length ? `<div class="alist">${items.slice(0,10).map(i=>`<div class="aitem"><span class="sev ${i.sev}" aria-hidden="true"></span><div>${i.html}</div>${itemBtn(i)}</div>`).join("")}</div>${items.length>10?`<p class="muted tiny">And ${items.length-10} more.</p>`:""}` : `<p class="muted small">Nothing needs attention right now.</p>`}
       </div>
-      <div class="card stack">
-        <div><h3>Candidate pipeline</h3><p class="muted small">Submittals by stage, not counting declined or withdrawn.</p></div>
-        <div class="hbars">${counts.map(c=>`<div class="hbar"><span>${esc(c.l)}</span><span class="trk"><span style="width:${c.n/maxN*100}%"></span></span><span class="val">${c.n}</span></div>`).join("")}</div>
+      <div class="stack">
+        <div class="card stack">
+          <div><h3>Candidate pipeline</h3><p class="muted small">Submittals by stage, not counting declined or withdrawn.</p></div>
+          <div class="hbars">${counts.map(c=>`<div class="hbar"><span>${esc(c.l)}</span><span class="trk"><span style="width:${c.n/maxN*100}%"></span></span><span class="val">${c.n}</span></div>`).join("")}</div>
+        </div>
+        <div class="card stack-s">
+          <h3>Interviews this week</h3>
+          ${upcoming.length ? `<div class="feed">${upcoming.map(s=>{ const q = byId("reqs",s.reqId); return `<div><span><span class="who">${esc(s.cand.name)}</span> · ${esc(s.interview.mode)}<span class="sub2">${esc(reqNo(q))} · ${esc(reqTitle(q))}${S.role!=="facility"?" · "+esc(facName(q?.facilityId)):""}</span></span><time>${esc(fmtDT(s.interview.at))}</time></div>`; }).join("")}</div>` : `<p class="muted small">No interviews scheduled in the next 7 days.</p>`}
+        </div>
       </div>
     </div>
     ${score}`;
@@ -714,7 +903,7 @@ function renderDash(){
    ========================================================= */
 function renderReqs(){
   const sc = scope(), el = $("p-reqs");
-  const statuses = S.role==="vendor" ? [["open","Open"],["all","All"]] : [["open","Open"],["filled","Filled"],["hold","On hold"],["draft","Draft"],["closed","Closed"],["all","All"]];
+  const statuses = S.role==="vendor" ? [["open","Open"],["all","All"]] : [["open","Open"],["pending","Waiting for approval"],["filled","Filled"],["hold","On hold"],["draft","Draft"],["closed","Closed"],["all","All"]];
   if(!statuses.some(s=>s[0]===F.reqStatus)) F.reqStatus = "open";
   const q = norm(F.reqQ);
   const list = sc.reqs
@@ -726,17 +915,17 @@ function renderReqs(){
   const v = S.role==="vendor" ? byId("vendors",S.as) : null;
   el.innerHTML = `
     <div class="head-row">
-      <div><h2>Requisitions</h2><p class="muted small">${S.role==="vendor" ? `Openings released to ${esc(v?.name||"you")} (Tier ${v?.tier||"–"}), plus any you've submitted to.` : "Openings posted by facilities. Release to Tier 1 vendors first, then to all tiers."}</p></div>
+      <div><h2>Requisitions</h2><p class="muted small">${S.role==="vendor" ? `Openings released to ${esc(v?.name||"you")} (Tier ${v?.tier||"–"}), plus any you've submitted to.` : S.role==="facility" ? "Post openings for SkyBridge to approve and send to vendors." : "Approve what facilities post, then release to Tier 1 first and all tiers on a schedule."}</p></div>
       ${can.postReq() ? `<button class="btn" data-act="req-new">Post requisition</button>` : ""}
     </div>
     <div class="toolbar">
-      <div class="seg" role="group" aria-label="Status">${statuses.map(([id,l])=>`<button data-act="f" data-k="reqStatus" data-v="${id}" aria-pressed="${F.reqStatus===id}">${l} · ${countOf(id)}</button>`).join("")}</div>
+      <div class="seg" role="group" aria-label="Status">${statuses.filter(([id])=>id==="open"||id==="all"||countOf(id)).map(([id,l])=>`<button data-act="f" data-k="reqStatus" data-v="${id}" aria-pressed="${F.reqStatus===id}">${l} · ${countOf(id)}</button>`).join("")}</div>
       <span class="spacer"></span>
       <select id="req-disc" aria-label="Discipline"><option value="">All disciplines</option>${DISCIPLINES.map(d=>`<option${F.reqDisc===d?" selected":""}>${d}</option>`).join("")}</select>
       <input type="search" id="req-q" placeholder="Search req #, specialty, facility" value="${esc(F.reqQ)}" aria-label="Search requisitions">
     </div>
     <div class="card" style="padding:6px 10px">
-      ${list.length ? `<div class="tbl"><table><thead><tr><th>Req</th><th>Position</th><th>Start</th><th>Shift</th><th class="n">Bill rate</th><th class="n">Filled</th><th class="n">Candidates</th><th>Release</th><th>Status</th><th></th></tr></thead><tbody>
+      ${list.length ? `<div class="tbl"><table><thead><tr><th>Req</th><th>Position</th><th>Start</th><th>Schedule</th><th class="n">Bill rate</th><th class="n">Filled</th><th class="n">Candidates</th><th>Release</th><th>Status</th><th></th></tr></thead><tbody>
       ${list.map(r=>{
         const subs = D().subs.filter(s=>s.reqId===r.id && activeStage(s));
         const mine = S.role==="vendor" ? subs.filter(s=>s.vendorId===S.as).length : null;
@@ -745,13 +934,13 @@ function renderReqs(){
           <td class="mono">${esc(reqNo(r))}</td>
           <td><b>${esc(reqTitle(r))}</b><span class="sub2">${esc(facName(r.facilityId))} · ${esc(r.unit)}</span></td>
           <td class="nw">${fmtD(r.start)}${r.status==="open" && n>=0 && n<=14 ? `<span class="sub2">in ${plural(n,"day")}</span>`:""}</td>
-          <td class="nw">${esc(r.shift)}<span class="sub2">${r.hours} hrs/wk · ${r.weeks} wks</span></td>
-          <td class="n">${rate(r.bill)}</td>
+          <td class="nw">${esc(r.shift)}<span class="sub2">${r.hours} ${unitOf(r)==="visit"?"visits":"hrs"}/wk · ${r.weeks} wks</span></td>
+          <td class="n">${rateU(r.bill,unitOf(r))}${S.role!=="vendor" && overCard(r) ? `<span class="sub2" style="color:var(--warn)">over rate card</span>` : ""}</td>
           <td class="n">${accepted(r)}/${r.openings}</td>
           <td class="n">${mine!=null ? `${mine} yours` : subs.length}</td>
-          <td class="nw">${releaseLabel(r)}</td>
+          <td class="nw">${esc(releaseLabel(r))}</td>
           <td>${reqChip(r)}</td>
-          <td><div class="acts">${S.role==="vendor" && openTo(r,v) ? `<button class="btn sm" data-act="sub-new" data-req="${esc(r.id)}">Submit</button>` : `<button class="btn sm ghost" data-act="req-view" data-id="${esc(r.id)}">View</button>`}</div></td>
+          <td><div class="acts">${S.role==="vendor" && openTo(r,v) ? `<button class="btn sm" data-act="sub-new" data-req="${esc(r.id)}">Submit</button>` : can.approve() && r.status==="pending" ? `<button class="btn sm" data-act="req-approve" data-id="${esc(r.id)}">Review</button>` : `<button class="btn sm ghost" data-act="req-view" data-id="${esc(r.id)}">View</button>`}</div></td>
         </tr>`;}).join("")}
       </tbody></table></div>` : empty(sc.reqs.length ? "No requisitions match" : "No requisitions yet", sc.reqs.length ? "Try a different status, discipline or search." : (can.postReq() ? "Post the first opening and release it to your vendors." : "When a facility releases an opening to your tier, it shows up here."))}
     </div>`;
@@ -761,9 +950,14 @@ function renderReqs(){
 
 function reqForm(r){
   const d = D(), isNew = !r;
-  r = r || {facilityId:S.role==="facility" ? S.as : d.facilities[0]?.id, discipline:"RN", shift:SHIFTS[0], start:isoDay(21), weeks:13, hours:40, bill:"", openings:1, release:1, status:"open", unit:"", specialty:"", notes:""};
+  r = r || {facilityId:S.role==="facility" ? S.as : d.facilities[0]?.id, discipline:"RN", shift:SHIFTS[0], start:isoDay(21), weeks:13, hours:40, bill:"", openings:1, status:"open", unit:"", specialty:"", notes:"", justification:""};
   const f = byId("facilities",r.facilityId);
+  const draftable = isNew || ["draft","pending"].includes(r.status);
   openDialog(isNew ? "Post a requisition" : `Edit ${reqNo(r)}`, `
+    ${r.returnNote ? `<p class="notice warn">Sent back by SkyBridge: ${esc(r.returnNote)}</p>` : ""}
+    ${S.sample ? `<details class="ai" id="rf-ai-box"><summary class="ai-tag" style="cursor:pointer">${ICON_AI} Fill from a job posting</summary>
+      <textarea id="rf-paste" placeholder="Paste the posting or the client's email. Claude fills in the form below, and you check it before posting."></textarea>
+      <div class="row"><button type="button" class="btn sm" data-act="req-parse">Fill the form</button><span class="msg" id="rf-ai-msg"></span></div></details>` : ""}
     <div class="fgrid">
       <label class="f">Facility<select name="facilityId" id="rf-fac" ${S.role==="facility"?"disabled":""}>${d.facilities.map(x=>`<option value="${esc(x.id)}"${x.id===r.facilityId?" selected":""}>${esc(x.name)}</option>`).join("")}</select></label>
       <label class="f">Unit or team<input type="text" name="unit" id="rf-unit" required value="${esc(r.unit)}" list="rf-units" placeholder="Field visits"><datalist id="rf-units">${(f?.units||[]).map(u=>`<option value="${esc(u)}">`).join("")}</datalist></label>
@@ -772,57 +966,160 @@ function reqForm(r){
       <label class="f">Shift<select name="shift" id="rf-shift">${SHIFTS.map(x=>`<option${x===r.shift?" selected":""}>${x}</option>`).join("")}</select></label>
       <label class="f">Start date<input type="date" name="start" id="rf-start" required value="${esc(r.start)}"></label>
       <label class="f">Length (weeks)<input type="number" name="weeks" id="rf-weeks" required min="1" max="52" value="${esc(r.weeks)}"></label>
-      <label class="f">Guaranteed hours per week<input type="number" name="hours" id="rf-hours" required min="1" max="84" value="${esc(r.hours)}"></label>
-      <label class="f">Bill rate ($/hr)<input type="number" name="bill" id="rf-bill" required min="1" step="0.01" value="${esc(r.bill)}" placeholder="78.00"></label>
+      <label class="f">Billed<select name="billUnit" id="rf-unit-b">${Object.entries(UNITS).map(([k,u])=>`<option value="${k}"${k===unitOf(r)?" selected":""}>${u.l}</option>`).join("")}</select></label>
+      <label class="f"><span id="rf-hours-l">Guaranteed ${unitOf(r)==="visit"?"visits":"hours"} per week</span><input type="number" name="hours" id="rf-hours" required min="1" max="84" value="${esc(r.hours)}"></label>
+      <label class="f">Bill rate ($)<input type="number" name="bill" id="rf-bill" required min="1" step="0.01" value="${esc(r.bill)}" placeholder="78.00"></label>
       <label class="f">Openings<input type="number" name="openings" id="rf-open" required min="1" max="50" value="${esc(r.openings)}"></label>
-      ${S.role==="admin" ? `<label class="f">Release to<select name="release" id="rf-rel"><option value="1"${r.release<=1?" selected":""}>Tier 1 vendors</option><option value="2"${r.release>=2?" selected":""}>All tiers</option></select></label>` : ""}
-      <label class="f">Status<select name="status" id="rf-status">${(isNew?[["open","Open (post now)"],["draft","Draft"]]:[["open","Open"],["draft","Draft"],["hold","On hold"],["filled","Filled"],["closed","Closed"]]).map(([v,l])=>`<option value="${v}"${v===r.status?" selected":""}>${l}</option>`).join("")}</select></label>
+      ${S.role==="admin" && (isNew || r.status==="draft") ? `<label class="f">Send to vendors<select name="dist" id="rf-dist">${DIST.map(([k,l])=>`<option value="${k}"${k===(r.dist||"d2")?" selected":""}>${l}</option>`).join("")}</select></label>` : ""}
+      <p class="small wide" id="rf-card"></p>
+      <label class="f wide" id="rf-just-l" hidden>Why the rate is above the rate card<textarea name="justification" id="rf-just" placeholder="Market rate, hard-to-fill shift, urgent start…">${esc(r.justification)}</textarea></label>
       <label class="f wide">Notes for vendors<textarea name="notes" id="rf-notes" placeholder="Float policy, EMR, visit productivity, parking…">${esc(r.notes)}</textarea></label>
+      ${draftable ? `<label class="row small wide" style="gap:8px"><input type="checkbox" name="asDraft" id="rf-draft" ${r.status==="draft" && !isNew?"checked":""}>Save as a draft for now</label>` : ""}
     </div>`,
-    isNew ? "Post requisition" : "Save changes",
+    isNew ? (S.role==="facility" ? "Submit for approval" : "Post requisition") : "Save changes",
     async fd=>{
       const facilityId = S.role==="facility" ? S.as : fd.facilityId;
       const fac = byId("facilities",facilityId);
-      const doc = {...(isNew ? {id:newId(),no:nextNo("reqs",1001),createdAt:today(),release:1} : r),
+      const doc = {...(isNew ? {id:newId(),no:nextNo("reqs",1001),createdAt:today(),release:0,tier2At:""} : r),
         facilityId, setting:fac?.setting||"", unit:fd.unit.trim(), discipline:fd.discipline, specialty:fd.specialty.trim(), shift:fd.shift,
-        start:fd.start, weeks:+fd.weeks, hours:+fd.hours, bill:+fd.bill, openings:+fd.openings, status:fd.status, notes:fd.notes.trim()};
-      if(fd.release) doc.release = +fd.release;
-      if(await Store.put("reqs",doc)) toast(isNew ? `${reqNo(doc)} posted` : `${reqNo(doc)} saved`);
+        start:fd.start, weeks:+fd.weeks, hours:+fd.hours, billUnit:fd.billUnit, bill:+fd.bill, openings:+fd.openings, notes:fd.notes.trim(), justification:(fd.justification||"").trim()};
+      if(overCard(doc) && !doc.justification) return "Explain why the bill rate is above the rate card. SkyBridge sees this when approving.";
+      let msg;
+      if(draftable){
+        delete doc.returnNote;
+        if(fd.asDraft){ doc.status = "draft"; msg = `${reqNo(doc)} saved as a draft`; }
+        else if(S.role==="facility"){ doc.status = "pending"; msg = `${reqNo(doc)} sent to SkyBridge for approval`; }
+        else { doc.status = "open"; applyDist(doc, fd.dist||"d2"); msg = `${reqNo(doc)} posted and sent to ${releaseLabel(doc).toLowerCase()}`; }
+      } else msg = `${reqNo(doc)} saved`;
+      if(await Store.put("reqs",doc)){ toast(msg); log(isNew ? (doc.status==="pending" ? `Submitted ${reqNo(doc)} (${reqTitle(doc)}) for approval` : doc.status==="open" ? `Posted ${reqNo(doc)} (${reqTitle(doc)})` : `Drafted ${reqNo(doc)}`) : doc.status==="pending" && r.status==="draft" ? `Resubmitted ${reqNo(doc)} for approval` : `Edited ${reqNo(doc)}`, {col:"reqs",id:doc.id,facilityId}); }
     });
-  $("rf-fac")?.addEventListener("change",e=>{ const fx = byId("facilities",e.target.value); $("rf-units").innerHTML = (fx?.units||[]).map(u=>`<option value="${esc(u)}">`).join(""); });
+  const sync = () => {
+    const fid = S.role==="facility" ? S.as : $("rf-fac").value, disc = $("rf-disc").value;
+    const card = cardFor(fid,disc), unit = $("rf-unit-b").value, bill = +$("rf-bill").value;
+    $("rf-hours-l").textContent = `Guaranteed ${unit==="visit"?"visits":"hours"} per week`;
+    const over = card && card.max && (card.unit||"hour")===unit && bill>card.max;
+    $("rf-card").innerHTML = card ? `Rate card for ${esc(disc)} at ${esc(facName(fid))}: target ${rateU(card.target,card.unit)}, max ${rateU(card.max,card.unit)}.${over?` <b style="color:var(--warn)">This is ${usd(bill-card.max)} over the max.</b>`:""}` : `<span class="muted">No rate card for ${esc(disc)} at this facility yet.</span>`;
+    $("rf-just-l").hidden = !over;
+  };
+  const applyCard = () => {
+    const fid = S.role==="facility" ? S.as : $("rf-fac").value, card = cardFor(fid,$("rf-disc").value);
+    if(card){ $("rf-unit-b").value = card.unit||"hour"; if(!$("rf-bill").value || isNew) $("rf-bill").value = card.target; }
+    sync();
+  };
+  $("rf-fac")?.addEventListener("change",e=>{ const fx = byId("facilities",e.target.value); $("rf-units").innerHTML = (fx?.units||[]).map(u=>`<option value="${esc(u)}">`).join(""); applyCard(); });
+  $("rf-disc").addEventListener("change",applyCard);
+  ["rf-bill","rf-unit-b"].forEach(id=>$(id).addEventListener("input",sync));
+  if(isNew) applyCard(); else sync();
+}
+
+async function parsePosting(){
+  const text = $("rf-paste")?.value.trim(), msg = $("rf-ai-msg");
+  if(!text){ msg.className = "msg bad"; msg.textContent = "Paste a posting first."; return; }
+  if(!S.sample) return;
+  msg.className = "msg"; msg.innerHTML = `<span class="spin"></span> Reading the posting…`;
+  const facs = D().facilities.map(f=>f.name);
+  const prompt = `You extract healthcare staffing requisitions from job postings. Today is ${today()}.
+Return only a JSON object with these keys (use null for anything the posting doesn't say):
+facility (one of: ${JSON.stringify(facs)}, or null), unit (string), discipline (one of ${JSON.stringify(DISCIPLINES)}), specialty (short string),
+shift (one of ${JSON.stringify(SHIFTS)}), start (YYYY-MM-DD), weeks (number), billUnit ("hour" or "visit"), hours (guaranteed hours or visits per week, number),
+bill (bill rate number, no $), openings (number), notes (one or two sentences of requirements vendors need to know).
+
+Posting:
+${text}`;
+  try{
+    const r = await S.sample.json(prompt);
+    const set = (id, v) => { if(v!=null && v!=="" && $(id)) $(id).value = v; };
+    if(r.facility && S.role!=="facility"){ const f = D().facilities.find(x=>x.name===r.facility); if(f){ $("rf-fac").value = f.id; $("rf-fac").dispatchEvent(new Event("change")); } }
+    if(DISCIPLINES.includes(r.discipline)){ $("rf-disc").value = r.discipline; $("rf-disc").dispatchEvent(new Event("change")); }
+    if(SHIFTS.includes(r.shift)) $("rf-shift").value = r.shift;
+    if(r.billUnit in UNITS) $("rf-unit-b").value = r.billUnit;
+    set("rf-unit",r.unit); set("rf-spec",r.specialty); set("rf-weeks",r.weeks); set("rf-hours",r.hours); set("rf-bill",r.bill); set("rf-open",r.openings); set("rf-notes",r.notes);
+    if(/^\d{4}-\d{2}-\d{2}$/.test(r.start||"")) $("rf-start").value = r.start;
+    $("rf-bill").dispatchEvent(new Event("input"));
+    msg.className = "msg good"; msg.textContent = "Filled in. Check each field before posting.";
+  }catch(e){ msg.className = "msg bad"; msg.textContent = aiError(e) || "Stopped."; }
+}
+
+function approveForm(id){
+  const r = byId("reqs",id); if(!r) return;
+  const card = cardFor(r.facilityId,r.discipline);
+  openDialog(`Approve ${reqNo(r)}`, `
+    <div class="facts">
+      <div><span class="eyebrow">Position</span><span>${esc(reqTitle(r))}</span></div>
+      <div><span class="eyebrow">Facility</span><span>${esc(facName(r.facilityId))} · ${esc(r.unit)}</span></div>
+      <div><span class="eyebrow">Dates</span><span>${fmtD(r.start)} · ${r.weeks} weeks</span></div>
+      <div><span class="eyebrow">Bill rate</span><span class="num">${rateU(r.bill,unitOf(r))}</span></div>
+      <div><span class="eyebrow">Rate card max</span><span class="num">${card?rateU(card.max,card.unit):"None set"}</span></div>
+      <div><span class="eyebrow">Estimated cost</span><span class="num">${usd0(estCost(r))}</span></div>
+    </div>
+    ${overCard(r) ? `<p class="notice warn"><b>Over the rate card by ${usd(r.bill-card.max)}.</b> ${esc(r.justification||"No reason given.")}</p>` : ""}
+    ${r.notes ? `<p class="notice">${esc(r.notes)}</p>` : ""}
+    <label class="f">Send to vendors<select name="dist" id="af-dist">${DIST.map(([k,l])=>`<option value="${k}"${k==="d2"?" selected":""}>${l}</option>`).join("")}</select></label>
+    <label class="f">Note to the facility (needed to send it back)<textarea name="note" id="af-note" placeholder="Optional when approving"></textarea></label>`,
+    "Approve and release",
+    async fd=>{
+      const doc = applyDist({...r,status:"open",approvedAt:today()}, fd.dist);
+      delete doc.returnNote;
+      if(await Store.put("reqs",doc)){ toast(`${reqNo(r)} approved and sent to ${releaseLabel(doc).toLowerCase()}`); log(`Approved ${reqNo(r)} and released it to ${releaseLabel(doc).toLowerCase()}${fd.note?": "+fd.note.trim():""}`,{col:"reqs",id:r.id,facilityId:r.facilityId}); }
+    },
+    `<button type="button" class="btn ghost" data-act="req-return" data-id="${esc(r.id)}">Send back</button>`);
+}
+async function returnReq(id){
+  const r = byId("reqs",id), note = $("af-note")?.value.trim();
+  if(!note){ $("dlg-err").textContent = "Add a note so the facility knows what to change."; $("dlg-err").hidden = false; $("af-note").focus(); return; }
+  if(await Store.put("reqs",{...r,status:"draft",returnNote:note})){ dlg.close(); toast(`${reqNo(r)} sent back to ${facName(r.facilityId)}`); log(`Sent ${reqNo(r)} back: ${note}`,{col:"reqs",id:r.id,facilityId:r.facilityId}); }
 }
 
 function reqView(id){
   const r = byId("reqs",id); if(!r) return;
   const v = S.role==="vendor" ? byId("vendors",S.as) : null;
   const subs = D().subs.filter(s=>s.reqId===r.id && (S.role!=="vendor" || s.vendorId===S.as));
+  const card = cardFor(r.facilityId,r.discipline);
   const buttons = [];
   if(S.role==="vendor" && openTo(r,v)) buttons.push(`<button type="button" class="btn" data-act="sub-new" data-req="${esc(r.id)}">Submit a candidate</button>`);
-  if(S.role==="admin" && r.status==="open") buttons.push(`<button type="button" class="btn ghost" data-act="sub-new" data-req="${esc(r.id)}">Submit on behalf of a vendor</button>`);
-  if(can.release() && r.status==="open" && r.release<2) buttons.push(`<button type="button" class="btn ghost" data-act="req-release" data-id="${esc(r.id)}">Release to all tiers</button>`);
-  if(can.postReq() && r.status==="draft") buttons.push(`<button type="button" class="btn" data-act="req-status" data-id="${esc(r.id)}" data-v="open">Post now</button>`);
+  if(can.approve() && r.status==="pending") buttons.push(`<button type="button" class="btn" data-act="req-approve" data-id="${esc(r.id)}">Review for approval</button>`);
+  if(S.role==="admin" && r.status==="open") buttons.push(`<button type="button" class="btn ghost" data-act="sub-new" data-req="${esc(r.id)}">Submit for a vendor</button>`);
+  if(can.approve() && r.status==="open" && releaseNow(r)<2) buttons.push(`<button type="button" class="btn ghost" data-act="req-release" data-id="${esc(r.id)}">Release to all tiers now</button>`);
   if(can.postReq() && r.status==="open") buttons.push(`<button type="button" class="btn ghost" data-act="req-status" data-id="${esc(r.id)}" data-v="hold">Put on hold</button>`);
   if(can.postReq() && r.status==="hold") buttons.push(`<button type="button" class="btn ghost" data-act="req-status" data-id="${esc(r.id)}" data-v="open">Reopen</button>`);
-  if(can.postReq()) buttons.push(`<button type="button" class="btn ghost" data-act="req-edit" data-id="${esc(r.id)}">Edit</button>`);
-  if(can.postReq() && r.status==="draft" && !subs.length) buttons.push(`<button type="button" class="btn danger" data-act="req-del" data-id="${esc(r.id)}">Delete draft</button>`);
+  if(can.postReq() && !["filled","closed"].includes(r.status)) buttons.push(`<button type="button" class="btn ghost" data-act="req-edit" data-id="${esc(r.id)}">Edit</button>`);
+  if(can.postReq() && ["open","hold"].includes(r.status)) buttons.push(`<button type="button" class="btn quiet" data-act="req-status" data-id="${esc(r.id)}" data-v="closed">Close</button>`);
+  if(can.postReq() && ["draft","pending"].includes(r.status) && !subs.length) buttons.push(`<button type="button" class="btn danger" data-act="req-del" data-id="${esc(r.id)}">Delete</button>`);
+  const hist = D().activity.filter(e=>e.col==="reqs" && e.id===r.id).slice(0,6);
   openDialog(`${reqNo(r)} · ${reqTitle(r)}`, `
-    <div class="row">${reqChip(r)}<span class="chip">${esc(releaseLabel(r))}</span><span class="chip">${accepted(r)} of ${plural(r.openings,"opening")} filled</span></div>
+    <div class="row">${reqChip(r)}<span class="chip">${esc(releaseLabel(r))}</span><span class="chip">${accepted(r)} of ${plural(r.openings,"opening")} filled</span>${S.role!=="vendor" && overCard(r)?`<span class="chip warn">Over rate card</span>`:""}</div>
+    ${r.returnNote ? `<p class="notice warn">Sent back by SkyBridge: ${esc(r.returnNote)}</p>` : ""}
     <div class="facts">
       <div><span class="eyebrow">Facility</span><span>${esc(facName(r.facilityId))}</span></div>
       <div><span class="eyebrow">Unit</span><span>${esc(r.unit)}</span></div>
       <div><span class="eyebrow">Setting</span><span>${esc(r.setting||"–")}</span></div>
       <div><span class="eyebrow">Shift</span><span>${esc(r.shift)}</span></div>
       <div><span class="eyebrow">Dates</span><span>${fmtD(r.start)} – ${fmtD(addDays(r.start,r.weeks*7-1))}</span></div>
-      <div><span class="eyebrow">Hours</span><span>${r.hours}/wk · ${r.weeks} weeks</span></div>
-      <div><span class="eyebrow">Bill rate</span><span class="num">${rate(r.bill)}</span></div>
-      <div><span class="eyebrow">Posted</span><span>${fmtD(r.createdAt)}</span></div>
+      <div><span class="eyebrow">Guaranteed</span><span>${r.hours} ${unitOf(r)==="visit"?"visits":"hrs"}/wk · ${r.weeks} weeks</span></div>
+      <div><span class="eyebrow">Bill rate</span><span class="num">${rateU(r.bill,unitOf(r))}</span></div>
+      ${S.role!=="vendor" ? `<div><span class="eyebrow">Rate card</span><span class="num">${card?`${usd(card.target)} target · ${usd(card.max)} max`:"None set"}</span></div><div><span class="eyebrow">Estimated cost</span><span class="num">${usd0(estCost(r))}</span></div>` : ""}
     </div>
     ${r.notes ? `<p class="notice">${esc(r.notes)}</p>` : ""}
-    <div class="stack-s"><h3>${S.role==="vendor" ? "Your candidates" : "Candidates"} · ${subs.length}</h3>
-    ${subs.length ? `<div class="tbl"><table><thead><tr><th>Candidate</th>${S.role!=="vendor"?"<th>Vendor</th>":""}<th class="n">Rate</th><th>Stage</th></tr></thead><tbody>
-      ${subs.map(s=>`<tr><td><b>${esc(s.cand.name)}</b><span class="sub2">${esc(s.cand.lic)} · ${s.cand.years} yrs</span></td>${S.role!=="vendor"?`<td>${esc(venName(s.vendorId))}</td>`:""}<td class="n">${rate(s.rate)}</td><td>${stageChip(s)}</td></tr>`).join("")}
-    </tbody></table></div>` : `<p class="muted small">No candidates yet.</p>`}</div>`,
+    ${S.role!=="vendor" && r.justification && overCard(r) ? `<p class="notice warn"><b>Rate justification:</b> ${esc(r.justification)}</p>` : ""}
+    <div class="stack-s"><div class="head-row"><h3>${S.role==="vendor" ? "Your candidates" : "Candidates"} · ${subs.length}</h3>${S.sample && can.review() && subs.filter(activeStage).length ? `<button type="button" class="btn sm ghost" data-act="req-ai" data-id="${esc(r.id)}">${ICON_AI} Compare with Claude</button>` : ""}</div>
+    <div class="ai" id="rv-ai" hidden><span class="ai-tag">${ICON_AI} Claude's comparison · check before acting on it</span><div class="out" id="rv-ai-out"></div></div>
+    ${subs.length ? `<div class="tbl"><table><thead><tr><th>Candidate</th>${S.role!=="vendor"?"<th>Vendor</th>":""}<th class="n">Years</th><th class="n">Rate</th><th class="n">Interview</th><th>Stage</th></tr></thead><tbody>
+      ${subs.map(s=>`<tr><td><b>${esc(s.cand.name)}</b><span class="sub2">${esc(s.cand.state)} ${esc(s.cand.lic)}</span></td>${S.role!=="vendor"?`<td>${esc(venName(s.vendorId))}</td>`:""}<td class="n">${s.cand.years}</td><td class="n">${rateU(s.rate,unitOf(r))}</td><td class="n">${s.feedback?s.feedback.score+" / 5":"–"}</td><td>${stageChip(s)}</td></tr>`).join("")}
+    </tbody></table></div>` : `<p class="muted small">No candidates yet.</p>`}</div>
+    ${hist.length && S.role!=="vendor" ? `<div class="stack-s"><h3>History</h3><div class="feed">${hist.map(e=>`<div><span><span class="who">${esc(e.who)}</span> · ${esc(e.text)}</span><time>${esc(fmtAgo(e.at))}</time></div>`).join("")}</div></div>` : ""}`,
     null, null, buttons.join(""));
+}
+function compareCandidates(id, btn){
+  const r = byId("reqs",id);
+  const subs = D().subs.filter(s=>s.reqId===id && activeStage(s));
+  const prompt = `You help a healthcare staffing manager compare candidates for one requisition. Be brief and concrete: one line per candidate on fit and risks, then a one-sentence recommendation of who to move forward first and why. Don't invent facts beyond what's below. No markdown headings.
+
+Requisition ${reqNo(r)}: ${reqTitle(r)} at ${facName(r.facilityId)} (${r.setting}), unit ${r.unit}, ${r.shift}, starts ${r.start}, ${r.weeks} weeks, ${r.hours} ${unitOf(r)==="visit"?"visits":"hours"}/week, bill rate ${rateU(r.bill,unitOf(r))}. Notes: ${r.notes||"none"}.
+
+Candidates:
+${subs.map(s=>`- ${s.cand.name} (${venName(s.vendorId)}): ${s.cand.years} years, license ${s.cand.state}, proposed ${rateU(s.rate,unitOf(r))}, stage ${stageLabel(s.stage)}, available ${s.avail||"unknown"}. Vendor notes: ${s.notes||"none"}.${s.feedback?` Interview ${s.feedback.score}/5: ${s.feedback.note}`:""}`).join("\n")}`;
+  $("rv-ai").hidden = false;
+  aiStream(prompt, $("rv-ai-out"), btn);
 }
 
 /* =========================================================
@@ -841,7 +1138,7 @@ function renderSubs(){
   const closed = list.filter(s=>!activeStage(s));
   el.innerHTML = `
     <div class="head-row">
-      <div><h2>Submittals</h2><p class="muted small">${can.review() ? "Move candidates through the stages. Accepting an offer books the assignment." : "Track your candidates. Withdraw anyone who's no longer available."}</p></div>
+      <div><h2>Submittals</h2><p class="muted small">${can.review() ? "Move candidates through the stages. Scheduling an interview and accepting an offer each take one click." : "Track your candidates. Withdraw anyone who's no longer available."}</p></div>
       ${can.submit() ? `<button class="btn" data-act="sub-new">Submit a candidate</button>` : ""}
     </div>
     <div class="toolbar">
@@ -849,7 +1146,7 @@ function renderSubs(){
       <input type="search" id="sub-q" placeholder="Search candidate, req #, vendor" value="${esc(F.subQ)}" aria-label="Search submittals">
     </div>
     ${sc.subs.length ? `<div class="board">${STAGES.map(st=>{
-      const cards = list.filter(s=>s.stage===st.id).sort((a,b)=>lastMove(a).localeCompare(lastMove(b)));
+      const cards = list.filter(s=>s.stage===st.id).sort((a,b)=>st.id==="interview" ? String(a.interview?.at).localeCompare(String(b.interview?.at)) : lastMove(a).localeCompare(lastMove(b)));
       return `<section class="col" aria-label="${esc(st.l)}"><header><b>${esc(st.l)}</b><span class="count">${cards.length}</span></header>
         ${cards.length ? cards.map(subCard).join("") : `<p class="none">No one here.</p>`}</section>`;
     }).join("")}</div>
@@ -860,19 +1157,24 @@ function renderSubs(){
   $("sub-fac")?.addEventListener("change",e=>{ F.subFac = e.target.value; renderTab(); });
 }
 function subCard(s){
-  const r = byId("reqs",s.reqId);
+  const r = byId("reqs",s.reqId), unit = unitOf(r);
   const days = daysBetween(lastMove(s),today());
   const over = r && s.rate>r.bill;
   const nx = nextStage(s.stage);
   const btns = [];
-  if(can.review() && nx) btns.push(`<button class="btn sm${nx==="accepted"?" good":""}" data-act="sub-move" data-id="${esc(s.id)}" data-v="${nx}">${nx==="accepted" ? "Accept offer" : nx==="offer" ? "Make offer" : "Move to "+stageLabel(nx).toLowerCase()}</button>`);
+  if(can.review() && nx){
+    if(nx==="interview") btns.push(`<button class="btn sm" data-act="sub-interview" data-id="${esc(s.id)}">Schedule interview</button>`);
+    else btns.push(`<button class="btn sm${nx==="accepted"?" good":""}" data-act="sub-move" data-id="${esc(s.id)}" data-v="${nx}">${nx==="accepted" ? "Accept offer" : nx==="offer" ? "Make offer" : "Move to "+stageLabel(nx).toLowerCase()}</button>`);
+  }
+  if(can.review() && s.stage==="interview") btns.push(`<button class="btn sm ghost" data-act="sub-feedback" data-id="${esc(s.id)}">${s.feedback?"Edit feedback":"Add feedback"}</button>`);
   if(can.review() && s.stage!=="accepted") btns.push(`<button class="btn sm quiet" data-act="sub-move" data-id="${esc(s.id)}" data-v="declined">Decline</button>`);
   if(S.role==="vendor" && s.stage!=="accepted") btns.push(`<button class="btn sm quiet" data-act="sub-move" data-id="${esc(s.id)}" data-v="withdrawn">Withdraw</button>`);
   return `<article class="scard">
     <span class="nm">${esc(s.cand.name)}</span>
     <span class="ln">${esc(reqNo(r))} · ${esc(reqTitle(r))}<br>${esc(facName(r?.facilityId))}</span>
     ${S.role!=="vendor" ? `<span class="ln">${esc(venName(s.vendorId))}</span>` : ""}
-    <div class="row"><span class="chip sm ${over?"warn":""}" ${over?`data-tip="${esc(`${usd(s.rate-r.bill)} over the ${rate(r.bill)} bill rate`)}"`:""}>${rate(s.rate)}</span><span class="chip sm">${s.cand.years} yrs</span><span class="tiny muted">${days===0?"today":plural(days,"day")+" here"}</span></div>
+    ${s.stage==="interview" && s.interview ? `<span class="chip sm brand" style="white-space:normal">${esc(fmtDT(s.interview.at))} · ${esc(s.interview.mode)}</span>` : ""}
+    <div class="row"><span class="chip sm ${over?"warn":""}" ${over?`data-tip="${esc(`${usd(s.rate-r.bill)} over the ${rateU(r.bill,unit)} bill rate`)}"`:""}>${rateU(s.rate,unit)}</span><span class="chip sm">${s.cand.years} yrs</span>${s.feedback?`<span class="chip sm ${s.feedback.score>=4?"good":"warn"}" data-tip="${esc(s.feedback.note||"")}">Interview ${s.feedback.score}/5</span>`:""}<span class="tiny muted">${days===0?"today":plural(days,"day")+" here"}</span></div>
     ${btns.length ? `<div class="row">${btns.join("")}</div>` : ""}
   </article>`;
 }
@@ -892,7 +1194,7 @@ function subForm(reqId){
       <label class="f">Years of experience<input type="number" name="years" id="sf-years" required min="0" max="60" value="3"></label>
       <label class="f">License state<input type="text" name="state" id="sf-state" required maxlength="2" value="${esc(byId("facilities",r0.facilityId)?.state||"")}" style="text-transform:uppercase"></label>
       <label class="f">License number<input type="text" name="lic" id="sf-lic" required autocomplete="off" placeholder="RN.123456"></label>
-      <label class="f">Proposed bill rate ($/hr)<input type="number" name="rate" id="sf-rate" required min="1" step="0.01" value="${r0.bill}"></label>
+      <label class="f"><span id="sf-rate-l">Proposed bill rate ($/${UNITS[unitOf(r0)].u})</span><input type="number" name="rate" id="sf-rate" required min="1" step="0.01" value="${r0.bill}"></label>
       <label class="f">Available from<input type="date" name="avail" id="sf-avail" required value="${esc(r0.start)}"></label>
       <p class="msg warn wide" id="sf-rate-msg" hidden></p>
       <label class="f wide">Notes for the facility<textarea name="notes" id="sf-notes" placeholder="Experience, EMR, certifications, availability…"></textarea></label>
@@ -906,34 +1208,73 @@ function subForm(reqId){
       if(dup) return `${dup.cand.name} is already submitted to ${reqNo(r)}${S.role==="vendor" && dup.vendorId!==S.as ? " by another vendor" : " by "+venName(dup.vendorId)}. A candidate can be submitted to a requisition once.`;
       const s = {id:newId(),reqId:r.id,vendorId,cand:{name:fd.name.trim(),state:fd.state.trim().toUpperCase(),lic:fd.lic.trim(),years:+fd.years},
         rate:+fd.rate,avail:fd.avail,notes:fd.notes.trim(),stage:"submitted",submittedAt:today(),history:[{stage:"submitted",at:today()}]};
-      if(await Store.put("subs",s)) toast(`${s.cand.name} submitted to ${reqNo(r)}`);
+      if(await Store.put("subs",s)){ toast(`${s.cand.name} submitted to ${reqNo(r)}`); log(`Submitted ${s.cand.name} to ${reqNo(r)}`,{col:"subs",id:s.id,facilityId:r.facilityId,vendorId}); }
     });
   const check = () => {
     const r = byId("reqs",$("sf-req").value), v2 = +$("sf-rate").value, m = $("sf-rate-msg");
     m.hidden = !(r && v2>r.bill);
-    if(!m.hidden) m.textContent = `This is ${usd(v2-r.bill)} above the ${rate(r.bill)} bill rate. The facility may decline it.`;
+    if(!m.hidden) m.textContent = `This is ${usd(v2-r.bill)} above the ${rateU(r.bill,unitOf(r))} bill rate. The facility may decline it.`;
   };
   $("sf-rate").addEventListener("input",check);
   $("sf-req").addEventListener("change",()=>{
     const r = byId("reqs",$("sf-req").value);
-    $("sf-rate").value = r.bill; $("sf-avail").value = r.start;
+    $("sf-rate").value = r.bill; $("sf-avail").value = r.start; $("sf-rate-l").textContent = `Proposed bill rate ($/${UNITS[unitOf(r)].u})`;
     if($("sf-ven")) $("sf-ven").innerHTML = eligible(r).map(x=>`<option value="${esc(x.id)}">${esc(x.name)} (Tier ${x.tier})</option>`).join("");
     check();
   });
 }
 
-async function moveSub(id, stage){
-  const s = byId("subs",id); if(!s) return;
-  const doc = {...s, stage, history:[...(s.history||[]),{stage,at:today()}]};
-  if(!await Store.put("subs",doc)) return;
-  if(stage!=="accepted"){ toast(`${s.cand.name}: ${stageLabel(stage).toLowerCase()}`); return; }
+async function moveSub(id, stage, extra={}){
+  const s = byId("subs",id); if(!s) return false;
   const r = byId("reqs",s.reqId);
+  const doc = {...s, ...extra, stage, history:[...(s.history||[]),{stage,at:today()}]};
+  if(!await Store.put("subs",doc)) return false;
+  const ref = {col:"subs",id:s.id,facilityId:r?.facilityId,vendorId:s.vendorId};
+  if(stage!=="accepted"){
+    log(stage==="interview" ? `Scheduled ${s.cand.name}'s interview for ${fmtDT(extra.interview?.at)} (${reqNo(r)})` : stage in CLOSED ? `${CLOSED[stage]} ${s.cand.name} on ${reqNo(r)}` : `Moved ${s.cand.name} to ${stageLabel(stage).toLowerCase()} on ${reqNo(r)}`, ref);
+    toast(stage==="interview" ? `Interview scheduled for ${s.cand.name}` : `${s.cand.name}: ${stageLabel(stage).toLowerCase()}`);
+    return true;
+  }
   const start = r.start < today() ? today() : r.start;
-  await Store.put("assigns",{id:newId(),subId:s.id,reqId:r.id,facilityId:r.facilityId,vendorId:s.vendorId,worker:s.cand.name,discipline:r.discipline,title:reqTitle(r),
-    start,end:addDays(start,r.weeks*7-1),bill:s.rate,hours:r.hours,status:"booked",creds:{}});
+  const a = {id:newId(),subId:s.id,reqId:r.id,facilityId:r.facilityId,vendorId:s.vendorId,worker:s.cand.name,discipline:r.discipline,title:reqTitle(r),
+    start,end:addDays(start,r.weeks*7-1),bill:s.rate,unit:unitOf(r),hours:r.hours,status:"booked",creds:{},tasks:{}};
+  await Store.put("assigns",a);
   const filled = D().subs.filter(x=>x.reqId===r.id && x.stage==="accepted" && x.id!==s.id).length + 1;
   if(filled>=r.openings && r.status==="open") await Store.put("reqs",{...r,status:"filled"});
-  toast(`${s.cand.name} is booked. Add their credentials on the Assignments tab.`);
+  log(`Accepted ${s.cand.name}'s offer and booked them on ${reqNo(r)} starting ${fmtD(start)}`, ref);
+  toast(`${s.cand.name} is booked. Finish onboarding on the Assignments tab.`);
+  return true;
+}
+function interviewForm(id){
+  const s = byId("subs",id), r = s && byId("reqs",s.reqId); if(!s) return;
+  const t = new Date(Date.now()+864e5); t.setMinutes(0,0,0); t.setHours(10);
+  const def = s.interview?.at || `${isoOf(t)}T10:00`;
+  openDialog(`Schedule an interview · ${s.cand.name}`, `
+    <p class="muted small">${esc(reqNo(r))} · ${esc(reqTitle(r))} at ${esc(facName(r?.facilityId))}. The vendor sees the time on their board.</p>
+    <div class="fgrid">
+      <label class="f">Date and time<input type="datetime-local" name="at" id="if-at" required value="${esc(def)}"></label>
+      <label class="f">Format<select name="mode" id="if-mode">${MODES.map(m=>`<option${m===s.interview?.mode?" selected":""}>${m}</option>`).join("")}</select></label>
+      <label class="f wide">Interviewer<input type="text" name="with" id="if-with" value="${esc(s.interview?.with || byId("facilities",r?.facilityId)?.contact || "")}"></label>
+    </div>`,
+    s.stage==="interview" ? "Reschedule" : "Schedule interview",
+    async fd=>{
+      const interview = {at:fd.at,mode:fd.mode,with:fd.with.trim()};
+      if(s.stage==="interview"){ if(await Store.put("subs",{...s,interview})){ toast("Interview rescheduled"); log(`Rescheduled ${s.cand.name}'s interview to ${fmtDT(fd.at)}`,{col:"subs",id:s.id,facilityId:r?.facilityId,vendorId:s.vendorId}); } return; }
+      await moveSub(s.id,"interview",{interview});
+    });
+}
+function feedbackForm(id){
+  const s = byId("subs",id), r = s && byId("reqs",s.reqId); if(!s) return;
+  const cur = s.feedback?.score || 0;
+  openDialog(`Interview feedback · ${s.cand.name}`, `
+    <p class="muted small">${s.interview ? esc(fmtDT(s.interview.at))+" · "+esc(s.interview.mode)+" · " : ""}${esc(reqNo(r))}</p>
+    <fieldset style="border:0;padding:0;margin:0" class="stack-s"><legend class="eyebrow" style="margin-bottom:6px">Overall fit (1 = poor, 5 = excellent)</legend>
+      <div class="score">${[1,2,3,4,5].map(n=>`<label><input type="radio" name="score" value="${n}" ${n===cur?"checked":""} required><span>${n}</span></label>`).join("")}</div></fieldset>
+    <label class="f">Notes<textarea name="note" id="ff-note" placeholder="Clinical strengths, gaps, schedule fit…">${esc(s.feedback?.note||"")}</textarea></label>`,
+    "Save feedback",
+    async fd=>{
+      if(await Store.put("subs",{...s,feedback:{score:+fd.score,note:fd.note.trim(),at:today()}})){ toast("Feedback saved"); log(`Rated ${s.cand.name}'s interview ${fd.score}/5`,{col:"subs",id:s.id,facilityId:r?.facilityId,vendorId:s.vendorId}); }
+    });
 }
 
 /* =========================================================
@@ -941,35 +1282,43 @@ async function moveSub(id, stage){
    ========================================================= */
 function renderAssign(){
   const sc = scope(), el = $("p-assign");
-  const views = [["live","Active and upcoming"],["issues","Credential issues"],["past","Completed"],["all","All"]];
-  const pick = (a, v=F.asg) => v==="live" ? isLive(a) : v==="issues" ? isLive(a) && credIssues(a).length>0 : v==="past" ? !isLive(a) : true;
+  const views = [["live","Active and upcoming"],["issues","Needs onboarding"],["past","Completed"],["all","All"]];
+  const pick = (a, v=F.asg) => v==="live" ? isLive(a) : v==="issues" ? isLive(a) && (credIssues(a).length>0 || tasksLeft(a).length>0) : v==="past" ? !isLive(a) : true;
   const list = sc.assigns.filter(a=>pick(a)).sort((a,b)=>a.start.localeCompare(b.start));
   el.innerHTML = `
-    <div class="head-row"><div><h2>Assignments</h2><p class="muted small">Booked clinicians, their dates and their credentials. A credential is flagged 30 days before it expires.</p></div></div>
+    <div class="head-row"><div><h2>Assignments</h2><p class="muted small">Booked clinicians, their dates and onboarding. A clinician is cleared to start when every credential is valid on day one and every onboarding task is done.</p></div></div>
     <div class="seg" role="group" aria-label="Show">${views.map(([id,l])=>`<button data-act="f" data-k="asg" data-v="${id}" aria-pressed="${F.asg===id}">${l} · ${sc.assigns.filter(a=>pick(a,id)).length}</button>`).join("")}</div>
     <div class="card" style="padding:6px 10px">
-    ${list.length ? `<div class="tbl"><table><thead><tr><th>Clinician</th>${S.role!=="vendor"?"<th>Vendor</th>":""}<th>Dates</th><th class="n">Bill rate</th><th>Credentials</th><th>Status</th><th></th></tr></thead><tbody>
-      ${list.map(a=>`<tr>
+    ${list.length ? `<div class="tbl"><table><thead><tr><th>Clinician</th>${S.role!=="vendor"?"<th>Vendor</th>":""}<th>Dates</th><th class="n">Bill rate</th><th>Credentials</th><th class="n">Onboarding</th><th>Status</th><th></th></tr></thead><tbody>
+      ${list.map(a=>{ const left = tasksLeft(a).length; return `<tr>
         <td><b>${esc(a.worker)}</b><span class="sub2">${esc(a.title)} · ${esc(facName(a.facilityId))}</span></td>
         ${S.role!=="vendor"?`<td>${esc(venName(a.vendorId))}</td>`:""}
         <td class="nw">${fmtD(a.start)} – ${fmtD(a.end)}${a.extended?`<span class="sub2">extended ${plural(a.extended,"week")}</span>`:""}</td>
-        <td class="n">${rate(a.bill)}</td>
+        <td class="n">${rateU(a.bill,unitOf(a))}</td>
         <td>${credChips(a)}</td>
+        <td class="n">${left ? `<span class="chip sm warn">${ONBOARD.length-left}/${ONBOARD.length}</span>` : `<span class="chip sm good">Done</span>`}</td>
         <td>${assignChip(a)}</td>
         <td><div class="acts">
-          ${can.creds() && isLive(a) ? `<button class="btn sm ghost" data-act="asg-creds" data-id="${esc(a.id)}">Credentials</button>` : ""}
+          ${isLive(a) ? `<button class="btn sm ghost" data-act="asg-onboard" data-id="${esc(a.id)}">${can.creds()?"Onboarding":"View"}</button>` : ""}
           ${can.manage() && isLive(a) ? `<button class="btn sm ghost" data-act="asg-extend" data-id="${esc(a.id)}">Extend</button><button class="btn sm quiet" data-act="asg-end" data-id="${esc(a.id)}">End</button>` : ""}
-        </div></td></tr>`).join("")}
+        </div></td></tr>`; }).join("")}
     </tbody></table></div>` : empty(sc.assigns.length ? "Nothing in this view" : "No assignments yet", sc.assigns.length ? "Try another view." : "When a facility accepts an offer, the clinician is booked here.")}
     </div>`;
 }
-function credForm(id){
+function onboardForm(id){
   const a = byId("assigns",id); if(!a) return;
-  openDialog(`Credentials · ${a.worker}`, `
-    <p class="muted small">${esc(a.title)} at ${esc(facName(a.facilityId))}, starting ${fmtD(a.start)}. Enter each document's expiration date.</p>
-    <div class="fgrid">${CREDS.map(c=>`<label class="f">${esc(c.l)} expires<input type="date" name="${c.id}" id="cf-${c.id}" value="${esc(a.creds?.[c.id]||"")}"></label>`).join("")}</div>`,
-    "Save credentials",
-    async fd=>{ if(await Store.put("assigns",{...a,creds:Object.fromEntries(CREDS.map(c=>[c.id,fd[c.id]||""]))})) toast("Credentials saved"); });
+  const edit = can.creds() || S.role==="admin";
+  const dis = edit ? "" : "disabled";
+  openDialog(`Onboarding · ${a.worker}`, `
+    <div class="row">${assignChip(a)}<span class="chip">${esc(a.title)}</span><span class="chip">${esc(facName(a.facilityId))}</span></div>
+    <div class="stack-s"><h3>Credentials</h3><p class="muted small">Enter each document's expiration date. ${a.discipline==="RN"||a.discipline==="LPN" ? `Verify nursing licenses at <a href="https://www.nursys.com" target="_blank" rel="noopener">Nursys</a>.` : ""}</p>
+    <div class="fgrid">${CREDS.map(c=>`<label class="f">${esc(c.l)} expires<input type="date" name="${c.id}" id="of-${c.id}" value="${esc(a.creds?.[c.id]||"")}" ${dis}></label>`).join("")}</div></div>
+    <div class="stack-s"><h3>Before day one</h3><div class="checks">${ONBOARD.map(o=>`<label><input type="checkbox" name="t_${o.id}" id="of-t-${o.id}" ${a.tasks?.[o.id]?"checked":""} ${dis}>${esc(o.l)}</label>`).join("")}</div></div>`,
+    edit ? "Save onboarding" : null,
+    edit ? async fd=>{
+      const doc = {...a,creds:Object.fromEntries(CREDS.map(c=>[c.id,fd[c.id]||""])),tasks:Object.fromEntries(ONBOARD.map(o=>[o.id,!!fd["t_"+o.id]]))};
+      if(await Store.put("assigns",doc)){ toast(cleared(doc) ? `${a.worker} is cleared to start` : "Onboarding saved"); log(cleared(doc) && !cleared(a) ? `Cleared ${a.worker} to start` : `Updated ${a.worker}'s onboarding`,{col:"assigns",id:a.id,facilityId:a.facilityId,vendorId:a.vendorId}); }
+    } : null);
 }
 function extendForm(id){
   const a = byId("assigns",id); if(!a) return;
@@ -977,7 +1326,7 @@ function extendForm(id){
     <p class="muted small">Currently ends ${fmtD(a.end)}.</p>
     <label class="f">Extend by<select name="weeks" id="ef-weeks"><option value="4">4 weeks</option><option value="8">8 weeks</option><option value="13" selected>13 weeks</option></select></label>`,
     "Extend assignment",
-    async fd=>{ const w = +fd.weeks; if(await Store.put("assigns",{...a,end:addDays(a.end,w*7),extended:(a.extended||0)+w})) toast(`${a.worker} extended to ${fmtD(addDays(a.end,w*7))}`); });
+    async fd=>{ const w = +fd.weeks, end = addDays(a.end,w*7); if(await Store.put("assigns",{...a,end,extended:(a.extended||0)+w})){ toast(`${a.worker} extended to ${fmtD(end)}`); log(`Extended ${a.worker} by ${plural(w,"week")} to ${fmtD(end)}`,{col:"assigns",id:a.id,facilityId:a.facilityId,vendorId:a.vendorId}); } });
 }
 function endForm(id){
   const a = byId("assigns",id); if(!a) return;
@@ -989,75 +1338,91 @@ function endForm(id){
     async fd=>{
       const doc = {...a,status:fd.how,endReason:fd.reason.trim()};
       if(fd.how==="ended") doc.end = today();
-      if(await Store.put("assigns",doc)) toast(fd.how==="ended" ? "Assignment ended" : "Assignment cancelled");
+      if(await Store.put("assigns",doc)){ toast(fd.how==="ended" ? "Assignment ended" : "Assignment cancelled"); log(`${fd.how==="ended"?"Ended":"Cancelled"} ${a.worker}'s assignment: ${doc.endReason}`,{col:"assigns",id:a.id,facilityId:a.facilityId,vendorId:a.vendorId}); }
     });
 }
 
 /* =========================================================
-   Timesheets
+   Time & expenses
    ========================================================= */
 function renderTime(){
   const sc = scope(), el = $("p-time");
-  const views = [["open",can.approve() ? "To approve" : "Open"],["rejected","Sent back"],["approved","Approved"],["all","All"]];
-  const pick = t => F.ts==="open" ? t.status==="submitted" : F.ts==="all" ? true : t.status===F.ts;
-  const list = sc.timesheets.filter(pick).sort((a,b)=>b.week.localeCompare(a.week));
+  const views = [["open",can.approveTime() ? "To approve" : "Waiting"],["rejected","Sent back"],["approved","Approved"],["all","All"]];
+  const list = sc.timesheets.filter(t=>F.ts==="open" ? t.status==="submitted" : F.ts==="all" ? true : t.status===F.ts).sort((a,b)=>b.week.localeCompare(a.week));
   const asg = id => byId("assigns",id);
   el.innerHTML = `
     <div class="head-row">
-      <div><h2>Timesheets</h2><p class="muted small">Weekly hours, Sunday to Saturday. Hours over ${OT_AFTER} in a week bill at ${OT_MULT}×.</p></div>
-      ${can.enterTime() ? `<button class="btn" data-act="ts-new">Enter a timesheet</button>` : ""}
+      <div><h2>Time &amp; expenses</h2><p class="muted small">Weekly hours or visits, Sunday to Saturday, plus mileage and other expenses. Hours over ${OT_AFTER} in a week bill at ${OT_MULT}×.</p></div>
+      ${can.enterTime() ? `<button class="btn" data-act="ts-new">Enter time</button>` : ""}
     </div>
-    <div class="seg" role="group" aria-label="Show">${views.map(([id,l])=>`<button data-act="f" data-k="ts" data-v="${id}" aria-pressed="${F.ts===id}">${l} · ${sc.timesheets.filter(t=>id==="open"?t.status==="submitted":id==="all"?true:t.status===id).length}</button>`).join("")}</div>
+    <div class="row">
+      <div class="seg" role="group" aria-label="Show">${views.map(([id,l])=>`<button data-act="f" data-k="ts" data-v="${id}" aria-pressed="${F.ts===id}">${l} · ${sc.timesheets.filter(t=>id==="open"?t.status==="submitted":id==="all"?true:t.status===id).length}</button>`).join("")}</div>
+      <span class="spacer"></span>
+      ${can.approveTime() && F.ts==="open" && list.length>1 ? `<button class="btn sm good" data-act="ts-approve-all">Approve all ${list.length}</button>` : ""}
+    </div>
     <div class="card" style="padding:6px 10px">
-    ${list.length ? `<div class="tbl"><table><thead><tr><th>Clinician</th><th>Week ending</th><th class="n">Regular</th><th class="n">Overtime</th><th class="n">Amount</th><th>Status</th><th></th></tr></thead><tbody>
+    ${list.length ? `<div class="tbl"><table><thead><tr><th>Clinician</th><th>Week ending</th><th class="n">Time</th><th class="n">Labor</th><th class="n">Expenses</th><th class="n">Total</th><th>Status</th><th></th></tr></thead><tbody>
       ${list.map(t=>{ const a = asg(t.assignId), m = tsMath(t,a); return `<tr>
         <td><b>${esc(a?.worker||"Unknown")}</b><span class="sub2">${esc(facName(a?.facilityId))}${S.role!=="vendor"?" · "+esc(venName(a?.vendorId)):""}</span></td>
         <td class="nw">${fmtD(t.week)}</td>
-        <td class="n">${m.reg}</td><td class="n">${m.ot||"–"}</td><td class="n">${usd(m.amount)}</td>
+        <td class="n">${unitsTxt(m.reg,m.unit)}${m.ot?`<span class="sub2">+${m.ot} OT</span>`:""}</td>
+        <td class="n">${usd(m.labor)}</td><td class="n">${m.expenses?usd(m.expenses):"–"}${m.miles?`<span class="sub2">${m.miles} mi</span>`:""}</td><td class="n"><b>${usd(m.amount)}</b></td>
         <td>${tsChip(t)}${t.status==="rejected"&&t.reason?`<span class="sub2">${esc(t.reason)}</span>`:""}</td>
         <td><div class="acts">
-          ${can.approve() && t.status==="submitted" ? `<button class="btn sm good" data-act="ts-approve" data-id="${esc(t.id)}">Approve</button><button class="btn sm quiet" data-act="ts-reject" data-id="${esc(t.id)}">Send back</button>` : ""}
+          ${can.approveTime() && t.status==="submitted" ? `<button class="btn sm good" data-act="ts-approve" data-id="${esc(t.id)}">Approve</button><button class="btn sm quiet" data-act="ts-reject" data-id="${esc(t.id)}">Send back</button>` : ""}
           ${can.enterTime() && t.status==="rejected" ? `<button class="btn sm" data-act="ts-edit" data-id="${esc(t.id)}">Fix and resubmit</button>` : ""}
-          ${t.status!=="rejected" && !(can.approve() && t.status==="submitted") ? `<button class="btn sm ghost" data-act="ts-view" data-id="${esc(t.id)}">View</button>` : ""}
+          ${t.status!=="rejected" && !(can.approveTime() && t.status==="submitted") ? `<button class="btn sm ghost" data-act="ts-view" data-id="${esc(t.id)}">View</button>` : ""}
         </div></td></tr>`; }).join("")}
-    </tbody></table></div>` : empty(sc.timesheets.length ? "Nothing in this view" : "No timesheets yet", sc.timesheets.length ? "Try another view." : can.enterTime() ? "Enter hours for a clinician once their first week is done." : "Vendors submit hours each week for you to approve.")}
+    </tbody></table></div>` : empty(sc.timesheets.length ? "Nothing in this view" : "No timesheets yet", sc.timesheets.length ? "Try another view." : can.enterTime() ? "Enter time for a clinician once their first week is done." : "Vendors submit time and expenses each week for you to approve.")}
     </div>`;
 }
 function tsForm(editId){
   const t0 = editId ? byId("timesheets",editId) : null;
   const sc = scope();
   const asgs = sc.assigns.filter(a=>a.status!=="cancelled" && a.start<=today() && addDays(a.end,35)>=today());
-  if(!asgs.length){ toast("No one has worked a shift yet. Timesheets open once an assignment has started."); return; }
+  if(!asgs.length && !t0){ toast("No one has worked a shift yet. Time opens once an assignment has started."); return; }
   const a0 = t0 ? byId("assigns",t0.assignId) : asgs[0];
   const weeksFor = a => [0,1,2,3].map(w=>lastSaturday(w)).filter(w=>w>=a.start && addDays(w,-6)<=a.end);
   const hours = t0 ? t0.hours : [0,0,0,0,0,0,0];
   const weekOpts = a => { const ws = weeksFor(a); if(t0 && !ws.includes(t0.week)) ws.unshift(t0.week); return ws.map(w=>`<option value="${w}"${t0?.week===w?" selected":""}>${fmtD(addDays(w,-6))} – ${fmtD(w)}</option>`).join(""); };
-  openDialog(t0 ? `Fix timesheet · ${a0.worker}` : "Enter a timesheet", `
+  const lbl = a => unitOf(a)==="visit" ? "Visits each day" : "Hours each day";
+  openDialog(t0 ? `Fix time · ${a0.worker}` : "Enter time and expenses", `
     ${t0?.reason ? `<p class="notice bad">${esc(t0.reason)}</p>` : ""}
     <div class="fgrid">
       <label class="f">Clinician<select name="assignId" id="tf-asg" ${t0?"disabled":""}>${asgs.concat(t0 && !asgs.includes(a0) ? [a0] : []).map(a=>`<option value="${esc(a.id)}"${a.id===a0.id?" selected":""}>${esc(a.worker)} · ${esc(facName(a.facilityId))}</option>`).join("")}</select></label>
       <label class="f">Week<select name="week" id="tf-week" ${t0?"disabled":""}>${weekOpts(a0)}</select></label>
     </div>
-    <div class="days" id="tf-days">${DAYS.map((d,i)=>`<label class="f">${d}<input type="number" name="h${i}" id="tf-h${i}" min="0" max="24" step="0.25" value="${hours[i]||0}"></label>`).join("")}</div>
+    <div class="stack-s"><span class="eyebrow" id="tf-lbl">${lbl(a0)}</span>
+    <div class="days" id="tf-days">${DAYS.map((d,i)=>`<label class="f">${d}<input type="number" name="h${i}" id="tf-h${i}" min="0" max="24" step="0.25" value="${hours[i]||0}"></label>`).join("")}</div></div>
+    <div class="fgrid">
+      <label class="f"><span id="tf-mi-l">Mileage (miles)</span><input type="number" name="miles" id="tf-miles" min="0" step="1" value="${t0?.miles||0}"></label>
+      <label class="f">Other expense ($)<input type="number" name="other" id="tf-other" min="0" step="0.01" value="${t0?.other||0}"></label>
+      <label class="f">Other expense for<input type="text" name="otherDesc" id="tf-odesc" value="${esc(t0?.otherDesc||"")}" placeholder="Parking, supplies…"></label>
+    </div>
     <p class="small num" id="tf-total"></p>`,
-    t0 ? "Resubmit" : "Submit timesheet",
+    t0 ? "Resubmit" : "Submit for approval",
     async fd=>{
       const assignId = t0 ? t0.assignId : fd.assignId, week = t0 ? t0.week : fd.week;
       if(!week) return "This clinician has no completed week to report yet.";
       const hrs = DAYS.map((_,i)=>Math.max(0,+fd["h"+i]||0));
-      if(!sum(hrs)) return "Enter the hours worked on at least one day.";
+      if(!sum(hrs)) return "Enter the time worked on at least one day.";
       if(hrs.some(h=>h>24)) return "A day can't have more than 24 hours.";
+      if(+fd.other>0 && !fd.otherDesc.trim()) return "Say what the other expense was for.";
       const dup = D().timesheets.find(t=>t.assignId===assignId && t.week===week && t.status!=="rejected" && t.id!==t0?.id);
       if(dup) return "There's already a timesheet for this clinician and week.";
-      const doc = {...(t0||{id:newId(),invoiceId:null}),assignId,week,hours:hrs,status:"submitted",reason:"",submittedAt:today()};
-      if(await Store.put("timesheets",doc)) toast("Timesheet submitted for approval");
+      const a = byId("assigns",assignId);
+      const doc = {...(t0||{id:newId(),invoiceId:null}),assignId,week,hours:hrs,miles:+fd.miles||0,other:+fd.other||0,otherDesc:fd.otherDesc.trim(),status:"submitted",reason:"",submittedAt:today()};
+      if(await Store.put("timesheets",doc)){ toast("Sent for approval"); log(`${t0?"Resubmitted":"Submitted"} ${a.worker}'s time for the week ending ${fmtD(week)} (${usd(tsMath(doc,a).amount)})`,{col:"timesheets",id:doc.id,facilityId:a.facilityId,vendorId:a.vendorId}); }
     });
   const total = () => {
     const a = byId("assigns",$("tf-asg").value);
-    const t = {hours:DAYS.map((_,i)=>+$("tf-h"+i).value||0)}, m = tsMath(t,a);
-    $("tf-total").innerHTML = `<b>${m.total} hours</b> · ${m.reg} regular${m.ot?`, ${m.ot} overtime`:""} · ${usd(m.amount)} at ${rate(a?.bill)}`;
+    const t = {hours:DAYS.map((_,i)=>+$("tf-h"+i).value||0),miles:$("tf-miles").value,other:$("tf-other").value}, m = tsMath(t,a);
+    const mr = byId("facilities",a?.facilityId)?.mileage ?? DEFAULT_MILEAGE;
+    $("tf-mi-l").textContent = `Mileage (miles at ${usd(mr)}/mi)`;
+    $("tf-lbl").textContent = lbl(a);
+    $("tf-total").innerHTML = `<b>${unitsTxt(m.total,m.unit)}</b>${m.ot?` (${m.ot} overtime)`:""} · labor ${usd(m.labor)} at ${rateU(a?.bill,m.unit)}${m.expenses?` · expenses ${usd(m.expenses)}`:""} · <b>${usd(m.amount)}</b>`;
   };
-  $("tf-days").addEventListener("input",total);
+  $("dlg-form").addEventListener("input",total);
   $("tf-asg").addEventListener("change",()=>{ $("tf-week").innerHTML = weekOpts(byId("assigns",$("tf-asg").value)); total(); });
   total();
 }
@@ -1068,16 +1433,31 @@ function tsView(id){
     <div class="row">${tsChip(t)}<span class="chip">${esc(facName(a?.facilityId))}</span></div>
     <div class="tbl"><table><thead><tr>${DAYS.map((d,i)=>`<th class="n">${d}<span class="sub2">${fmtD(addDays(t.week,i-6))}</span></th>`).join("")}</tr></thead>
     <tbody><tr>${t.hours.map(h=>`<td class="n">${h||"–"}</td>`).join("")}</tr></tbody></table></div>
-    <p class="small num"><b>${m.total} hours</b> · ${m.reg} regular${m.ot?`, ${m.ot} overtime`:""} · ${usd(m.amount)} at ${rate(a?.bill)}</p>`,
+    <div class="facts">
+      <div><span class="eyebrow">Time</span><span class="num">${unitsTxt(m.reg,m.unit)}${m.ot?` + ${m.ot} OT`:""}</span></div>
+      <div><span class="eyebrow">Labor</span><span class="num">${usd(m.labor)}</span></div>
+      <div><span class="eyebrow">Mileage</span><span class="num">${m.miles} mi · ${usd(m.mileage)}</span></div>
+      <div><span class="eyebrow">Other</span><span class="num">${m.other?`${usd(m.other)} · ${esc(t.otherDesc)}`:"–"}</span></div>
+      <div><span class="eyebrow">Total</span><span class="num"><b>${usd(m.amount)}</b></span></div>
+    </div>`,
     null, null,
-    can.approve() && t.status==="submitted" ? `<button type="button" class="btn good" data-act="ts-approve" data-id="${esc(t.id)}">Approve</button><button type="button" class="btn ghost" data-act="ts-reject" data-id="${esc(t.id)}">Send back</button>` : "");
+    can.approveTime() && t.status==="submitted" ? `<button type="button" class="btn good" data-act="ts-approve" data-id="${esc(t.id)}">Approve</button><button type="button" class="btn ghost" data-act="ts-reject" data-id="${esc(t.id)}">Send back</button>` : "");
 }
 function rejectForm(id){
   const t = byId("timesheets",id), a = t && byId("assigns",t.assignId); if(!t) return;
-  openDialog(`Send back ${a?.worker||""}'s timesheet`, `
+  openDialog(`Send back ${a?.worker||""}'s time`, `
     <label class="f">What needs fixing<textarea name="reason" id="jf-reason" required placeholder="Missing visit notes for Thursday…"></textarea></label>`,
     "Send back",
-    async fd=>{ if(await Store.put("timesheets",{...t,status:"rejected",reason:fd.reason.trim()})) toast("Timesheet sent back to the vendor"); });
+    async fd=>{ if(await Store.put("timesheets",{...t,status:"rejected",reason:fd.reason.trim()})){ toast("Sent back to the vendor"); log(`Sent back ${a?.worker}'s time for ${fmtD(t.week)}: ${fd.reason.trim()}`,{col:"timesheets",id:t.id,facilityId:a?.facilityId,vendorId:a?.vendorId}); } });
+}
+async function approveTime(ids){
+  let n = 0;
+  for(const id of ids){
+    const t = byId("timesheets",id), a = t && byId("assigns",t.assignId);
+    if(t && t.status==="submitted" && await Store.put("timesheets",{...t,status:"approved",reason:""})){ n++; log(`Approved ${a?.worker}'s time for ${fmtD(t.week)}`,{col:"timesheets",id:t.id,facilityId:a?.facilityId,vendorId:a?.vendorId}); }
+  }
+  dlg.open && dlg.close();
+  toast(n===1 ? "Timesheet approved" : `${n} timesheets approved`);
 }
 
 /* =========================================================
@@ -1092,19 +1472,19 @@ function renderInv(){
   const paid = sum(sc.invoices.filter(i=>i.status==="paid").map(i=>i.total));
   el.innerHTML = `
     <div class="head-row">
-      <div><h2>Invoices</h2><p class="muted small">${can.invoice() ? "One invoice per facility from approved timesheets. The VMS fee comes out of what each vendor is paid." : "Invoices for approved hours at your facility."}</p></div>
-      ${can.invoice() ? `<button class="btn" data-act="inv-make" ${ready.length?"":"disabled"}>${ready.length ? `Create invoices from ${plural(ready.length,"timesheet")}` : "No approved timesheets to invoice"}</button>` : ""}
+      <div><h2>Invoices</h2><p class="muted small">${can.invoice() ? "One consolidated invoice per facility from approved time and expenses. The VMS fee comes out of labor only." : "Consolidated invoices for approved time and expenses at your facility."}</p></div>
+      ${can.invoice() ? `<button class="btn" data-act="inv-make" ${ready.length?"":"disabled"}>${ready.length ? `Create invoices from ${plural(ready.length,"timesheet")}` : "No approved time to invoice"}</button>` : ""}
     </div>
     <div class="row"><span class="chip warn">${usd(out)} awaiting payment</span><span class="chip good">${usd(paid)} paid</span></div>
     <div class="seg" role="group" aria-label="Show">${views.map(([id,l])=>`<button data-act="f" data-k="inv" data-v="${id}" aria-pressed="${F.inv===id}">${l} · ${sc.invoices.filter(i=>id==="all"||i.status===id).length}</button>`).join("")}</div>
     <div class="card" style="padding:6px 10px">
-    ${list.length ? `<div class="tbl"><table><thead><tr><th>Invoice</th><th>Facility</th><th>Created</th><th class="n">Lines</th><th class="n">Total</th>${can.invoice()?`<th class="n">VMS fee</th>`:""}<th>Status</th><th></th></tr></thead><tbody>
+    ${list.length ? `<div class="tbl"><table><thead><tr><th>Invoice</th><th>Facility</th><th>Created</th><th class="n">Lines</th><th class="n">Labor</th><th class="n">Expenses</th><th class="n">Total</th>${can.invoice()?`<th class="n">VMS fee</th>`:""}<th>Status</th><th></th></tr></thead><tbody>
       ${list.map(i=>`<tr class="click" data-act="inv-view" data-id="${esc(i.id)}">
         <td class="mono">INV-${i.no}</td><td>${esc(facName(i.facilityId))}</td><td class="nw">${fmtD(i.createdAt)}</td>
-        <td class="n">${i.lines.length}</td><td class="n">${usd(i.total)}</td>
-        ${can.invoice()?`<td class="n">${usd(i.total*(i.feePct||0)/100)}<span class="sub2">${i.feePct}%</span></td>`:""}
+        <td class="n">${i.lines.length}</td><td class="n">${usd(i.labor ?? i.total)}</td><td class="n">${i.expenses?usd(i.expenses):"–"}</td><td class="n"><b>${usd(i.total)}</b></td>
+        ${can.invoice()?`<td class="n">${usd(feeOf(i))}<span class="sub2">${i.feePct}%</span></td>`:""}
         <td>${invChip(i)}</td><td><div class="acts"><button class="btn sm ghost" data-act="inv-view" data-id="${esc(i.id)}">View</button></div></td></tr>`).join("")}
-    </tbody></table></div>` : empty(sc.invoices.length ? "Nothing in this view" : "No invoices yet", can.invoice() ? "Approve timesheets, then create invoices from them here." : "Invoices appear here once SkyBridge bills approved hours.")}
+    </tbody></table></div>` : empty(sc.invoices.length ? "Nothing in this view" : "No invoices yet", can.invoice() ? "Approve time, then create invoices from it here." : "Invoices appear here once SkyBridge bills approved time.")}
     </div>`;
 }
 async function makeInvoices(){
@@ -1115,10 +1495,10 @@ async function makeInvoices(){
   let no = nextNo("invoices",1001), made = 0;
   for(const [fid,rows] of Object.entries(groups)){
     const f = byId("facilities",fid);
-    const inv = {id:newId(),no:no++,facilityId:fid,createdAt:today(),feePct:f?.feePct||0,status:"draft",lines:rows.map(([t,a])=>lineFor(t,a))};
-    inv.total = sum(inv.lines.map(l=>l.amount));
+    const inv = totalInvoice({id:newId(),no:no++,facilityId:fid,createdAt:today(),feePct:f?.feePct||0,status:"draft",lines:rows.map(([t,a])=>lineFor(t,a))});
     if(!await Store.put("invoices",inv)) return;
     for(const [t] of rows) await Store.put("timesheets",{...t,invoiceId:inv.id});
+    log(`Created INV-${inv.no} for ${f?.name} (${usd(inv.total)})`,{col:"invoices",id:inv.id,facilityId:fid});
     made++;
   }
   toast(`${plural(made,"draft invoice")} created`);
@@ -1132,23 +1512,113 @@ function invView(id){
   btns.push(`<button type="button" class="btn ghost" data-act="inv-csv" data-id="${esc(i.id)}">Export CSV</button>`);
   openDialog(`INV-${i.no} · ${facName(i.facilityId)}`, `
     <div class="row">${invChip(i)}<span class="chip">Created ${fmtD(i.createdAt)}</span></div>
-    <div class="tbl"><table><thead><tr><th>Clinician</th><th>Week ending</th><th class="n">Reg</th><th class="n">OT</th><th class="n">Rate</th><th class="n">Amount</th></tr></thead><tbody>
-      ${i.lines.map(l=>`<tr><td><b>${esc(l.worker)}</b><span class="sub2">${esc(l.title)}</span></td><td class="nw">${fmtD(l.week)}</td><td class="n">${l.reg}</td><td class="n">${l.ot||"–"}</td><td class="n">${usd(l.bill)}</td><td class="n">${usd(l.amount)}</td></tr>`).join("")}
-    </tbody><tfoot><tr><td colspan="5">Total due from facility</td><td class="n">${usd(i.total)}</td></tr></tfoot></table></div>
-    ${can.invoice() ? `<div class="stack-s"><h3>Vendor payables</h3><div class="tbl"><table><thead><tr><th>Vendor</th><th class="n">Billed</th><th class="n">VMS fee (${i.feePct}%)</th><th class="n">Pay vendor</th></tr></thead><tbody>
-      ${vendors.map(v=>{ const billed = sum(i.lines.filter(l=>l.vendorId===v).map(l=>l.amount)); return `<tr><td>${esc(venName(v))}</td><td class="n">${usd(billed)}</td><td class="n">${usd(billed*i.feePct/100)}</td><td class="n">${usd(vendorShare(i,v))}</td></tr>`; }).join("")}
+    <div class="tbl"><table><thead><tr><th>Clinician</th><th>Week ending</th><th class="n">Time</th><th class="n">Rate</th><th class="n">Labor</th><th class="n">Expenses</th><th class="n">Amount</th></tr></thead><tbody>
+      ${i.lines.map(l=>`<tr><td><b>${esc(l.worker)}</b><span class="sub2">${esc(l.title)}</span></td><td class="nw">${fmtD(l.week)}</td><td class="n">${unitsTxt(l.reg,l.unit)}${l.ot?`<span class="sub2">+${l.ot} OT</span>`:""}</td><td class="n">${rateU(l.bill,l.unit)}</td><td class="n">${usd(l.labor ?? l.amount)}</td><td class="n">${(l.mileage||0)+(l.other||0) ? usd((l.mileage||0)+(l.other||0)) : "–"}${l.miles?`<span class="sub2">${l.miles} mi</span>`:""}</td><td class="n">${usd(l.amount)}</td></tr>`).join("")}
+    </tbody><tfoot><tr><td colspan="6">Total due from facility</td><td class="n">${usd(i.total)}</td></tr></tfoot></table></div>
+    ${can.invoice() ? `<div class="stack-s"><h3>Vendor payables</h3><div class="tbl"><table><thead><tr><th>Vendor</th><th class="n">Labor</th><th class="n">VMS fee (${i.feePct}%)</th><th class="n">Expenses</th><th class="n">Pay vendor</th></tr></thead><tbody>
+      ${vendors.map(v=>{ const ls = i.lines.filter(l=>l.vendorId===v), lab = sum(ls.map(l=>l.labor ?? l.amount)), exp = sum(ls.map(l=>(l.mileage||0)+(l.other||0))); return `<tr><td>${esc(venName(v))}</td><td class="n">${usd(lab)}</td><td class="n">−${usd(lab*i.feePct/100)}</td><td class="n">${exp?usd(exp):"–"}</td><td class="n"><b>${usd(vendorShare(i,v))}</b></td></tr>`; }).join("")}
     </tbody></table></div></div>` : ""}`,
     null, null, btns.join(""));
 }
 async function invCSV(id){
   const i = byId("invoices",id); if(!i) return;
-  const q = v => `"${String(v??"").replace(/"/g,'""')}"`;
-  const head = ["Invoice","Facility","Clinician","Position","Vendor","Week ending","Regular hours","Overtime hours","Bill rate","Amount"];
-  const lines = i.lines.map(l=>[`INV-${i.no}`,facName(i.facilityId),l.worker,l.title,venName(l.vendorId),l.week,l.reg,l.ot,l.bill.toFixed(2),l.amount.toFixed(2)]);
-  const text = [head,...lines].map(l=>l.map(q).join(",")).join("\n");
-  const name = `INV-${i.no}-${facName(i.facilityId).replace(/[^a-z0-9]+/gi,"-")}.csv`;
-  if(S.downloads){ try{ await S.downloads.save({filename:name,data:text}); }catch(e){} return; }
-  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text],{type:"text/csv"})); a.download = name; a.click();
+  const head = ["Invoice","Facility","Clinician","Position","Vendor","Week ending","Unit","Regular","Overtime","Bill rate","Labor","Miles","Mileage","Other expense","Other for","Amount"];
+  const rows = i.lines.map(l=>[`INV-${i.no}`,facName(i.facilityId),l.worker,l.title,venName(l.vendorId),l.week,l.unit||"hour",l.reg,l.ot,l.bill.toFixed(2),(l.labor??l.amount).toFixed(2),l.miles||0,(l.mileage||0).toFixed(2),(l.other||0).toFixed(2),l.otherDesc||"",l.amount.toFixed(2)]);
+  await saveFile(`INV-${i.no}-${facName(i.facilityId).replace(/[^a-z0-9]+/gi,"-")}.csv`, csv([head,...rows]));
+}
+
+/* =========================================================
+   Reports
+   ========================================================= */
+function periodStart(p){
+  const d = new Date();
+  if(p==="month") return today().slice(0,8)+"01";
+  if(p==="quarter") return `${d.getFullYear()}-${pad(Math.floor(d.getMonth()/3)*3+1)}-01`;
+  if(p==="ytd") return `${d.getFullYear()}-01-01`;
+  return "";
+}
+function renderReports(){
+  const sc = scope(), el = $("p-reports");
+  const from = periodStart(F.period), year = `${new Date().getFullYear()}-01-01`;
+  const invs = sc.invoices.filter(i=>i.createdAt>=from);
+  const lines = invs.flatMap(i=>i.lines.map(l=>({...l,facilityId:i.facilityId,feePct:i.feePct,invNo:i.no,createdAt:i.createdAt})));
+  const spend = sum(invs.map(i=>i.total)), labor = sum(invs.map(i=>i.labor ?? i.total)), exp = spend-labor, fees = sum(invs.map(feeOf));
+  const hours = sum(lines.filter(l=>(l.unit||"hour")==="hour").map(l=>l.reg+l.ot)), visits = sum(lines.filter(l=>l.unit==="visit").map(l=>l.reg));
+  const group = (key, name) => {
+    const m = {}; lines.forEach(l=>{ const k = l[key]; m[k] = (m[k]||0) + l.amount; });
+    return Object.entries(m).map(([k,v])=>({k,l:name(k),v})).sort((a,b)=>b.v-a.v);
+  };
+  const bars = (rows) => { const mx = Math.max(1,...rows.map(r=>r.v)); return rows.length ? `<div class="hbars">${rows.map(r=>`<div class="hbar" style="grid-template-columns:minmax(0,170px) minmax(0,1fr) 92px"><span>${esc(r.l)}</span><span class="trk"><span style="width:${r.v/mx*100}%"></span></span><span class="val">${usd0(r.v)}</span></div>`).join("")}</div>` : `<p class="muted small">No invoiced spend in this period.</p>`; };
+  const facs = S.role==="facility" ? D().facilities.filter(f=>f.id===S.as) : D().facilities;
+  const budgets = facs.map(f=>{
+    const inv = sum(D().invoices.filter(i=>i.facilityId===f.id && i.createdAt>=year).map(i=>i.total));
+    const committed = sum(D().assigns.filter(a=>a.facilityId===f.id && a.status!=="cancelled" && a.end>=year).map(a=>{
+      const s = a.start<year ? year : a.start, wks = Math.max(0,(daysBetween(s,a.end)+1)/7);
+      return a.bill*a.hours*wks;
+    }));
+    return {f,inv,committed,budget:f.budget||0};
+  });
+  const acts = sc.activity.slice(0,F.actN);
+  const periods = [["month","This month"],["quarter","This quarter"],["ytd","Year to date"],["all","All time"]];
+  el.innerHTML = `
+    <div class="head-row">
+      <div><h2>Reports</h2><p class="muted small">${esc(scopeLabel())}. Spend is what's been invoiced.</p></div>
+      <div class="row"><div class="seg" role="group" aria-label="Period">${periods.map(([id,l])=>`<button data-act="f" data-k="period" data-v="${id}" aria-pressed="${F.period===id}">${l}</button>`).join("")}</div>
+      <button class="btn sm ghost" data-act="rep-csv" ${lines.length?"":"disabled"}>Export spend detail</button></div>
+    </div>
+    <div class="kpis">
+      <div class="kpi" style="cursor:default"><span class="eyebrow">Spend</span><span class="v">${usd0(spend)}</span><span class="s">${plural(invs.length,"invoice")}</span></div>
+      <div class="kpi" style="cursor:default"><span class="eyebrow">Labor</span><span class="v">${usd0(labor)}</span><span class="s">${hours} hrs · ${visits} visits</span></div>
+      <div class="kpi" style="cursor:default"><span class="eyebrow">Expenses</span><span class="v">${usd0(exp)}</span><span class="s">mileage and other</span></div>
+      ${S.role==="admin" ? `<div class="kpi" style="cursor:default"><span class="eyebrow">VMS fees</span><span class="v">${usd0(fees)}</span><span class="s">${labor?(fees/labor*100).toFixed(1):"0.0"}% of labor</span></div>` : ""}
+      <div class="kpi" style="cursor:default"><span class="eyebrow">Clinicians working</span><span class="v">${sc.assigns.filter(a=>isLive(a) && a.start<=today()).length}</span><span class="s">today</span></div>
+    </div>
+    ${S.sample ? `<div class="ai"><span class="ai-tag">${ICON_AI} Ask about your data</span>
+      <div class="row" style="flex-wrap:nowrap"><input type="text" id="ask-q" placeholder="Which vendor fills ICU openings fastest? What will Lakeside spend this quarter?" aria-label="Question"><button class="btn" data-act="ask">Ask</button></div>
+      <div class="out" id="ask-out" hidden></div><p class="tiny muted">Claude answers from the records you can see here. Check the numbers before you share them.</p></div>` : ""}
+    <div class="card stack">
+      <div class="head-row"><div><h3>Budget by facility · ${new Date().getFullYear()}</h3><p class="muted small">Invoiced so far, plus what booked assignments will cost through their end dates.</p></div>
+      <div class="legend"><span><i style="background:var(--brand)"></i>Invoiced</span><span><i style="background:color-mix(in oklab,var(--brand) 30%,var(--surface-2))"></i>Committed</span></div></div>
+      ${budgets.map(b=>{ const cap = Math.max(b.budget, b.committed, b.inv, 1), over = b.committed>b.budget && b.budget; return `<div class="budget">
+        <div class="row small"><b>${esc(b.f.name)}</b><span class="spacer"></span><span class="num">${usd0(b.inv)} invoiced · ${usd0(b.committed)} committed of ${b.budget?usd0(b.budget):"no budget set"}</span>${over?`<span class="chip sm bad">Over budget</span>`:""}</div>
+        <div class="trk"><span class="c" style="width:${b.committed/cap*100}%"></span><span class="i ${over?"over":""}" style="width:${b.inv/cap*100}%"></span></div></div>`; }).join("") || `<p class="muted small">No facilities yet.</p>`}
+    </div>
+    <div class="grid2">
+      <div class="card stack"><h3>Spend by ${S.role==="facility"?"vendor":"facility"}</h3>${bars(S.role==="facility" ? group("vendorId",venName) : group("facilityId",facName))}</div>
+      <div class="card stack"><h3>Spend by discipline</h3>${bars(group("discipline",k=>k&&k!=="undefined"?k:"Other"))}</div>
+    </div>
+    ${S.role==="admin" ? `<div class="card stack"><h3>Spend by vendor</h3>${bars(group("vendorId",venName))}</div>` : ""}
+    <div class="card stack-s">
+      <h3>Activity</h3><p class="muted small">Every change, newest first.</p>
+      ${acts.length ? `<div class="feed">${acts.map(e=>`<div><span><span class="who">${esc(e.who)}</span> · ${esc(e.text)}</span><time title="${esc(new Date(e.at).toLocaleString())}">${esc(fmtAgo(e.at))}</time></div>`).join("")}</div>${sc.activity.length>acts.length?`<div><button class="btn sm ghost" data-act="act-more">Show ${Math.min(25,sc.activity.length-acts.length)} more</button></div>`:""}` : `<p class="muted small">Nothing yet.</p>`}
+    </div>`;
+  $("ask-q")?.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); ACT.ask(e.target.nextElementSibling); } });
+}
+async function repCSV(){
+  const sc = scope(), from = periodStart(F.period);
+  const invs = sc.invoices.filter(i=>i.createdAt>=from);
+  const head = ["Invoice","Created","Status","Facility","Vendor","Clinician","Discipline","Week ending","Unit","Regular","Overtime","Bill rate","Labor","Expenses","Amount"];
+  const rows = invs.flatMap(i=>i.lines.map(l=>[`INV-${i.no}`,i.createdAt,i.status,facName(i.facilityId),venName(l.vendorId),l.worker,l.discipline||"",l.week,l.unit||"hour",l.reg,l.ot,l.bill.toFixed(2),(l.labor??l.amount).toFixed(2),((l.mileage||0)+(l.other||0)).toFixed(2),l.amount.toFixed(2)]));
+  await saveFile(`skybridge-vms-spend-${F.period}-${today()}.csv`, csv([head,...rows]));
+}
+function askData(btn){
+  const q = $("ask-q")?.value.trim(); if(!q) return;
+  const sc = scope();
+  const data = {
+    today: today(), viewingAs: scopeLabel(),
+    facilities: sc.facilities.filter(f=>S.role!=="facility" || f.id===S.as).map(f=>({name:f.name,setting:f.setting,budget:f.budget,feePct:S.role==="admin"?f.feePct:undefined,rateCard:f.rates})),
+    requisitions: sc.reqs.map(r=>({no:reqNo(r),facility:facName(r.facilityId),title:reqTitle(r),status:r.status,start:r.start,weeks:r.weeks,bill:r.bill,unit:unitOf(r),openings:r.openings,filled:accepted(r),posted:r.createdAt})),
+    submittals: sc.subs.map(s=>({req:reqNo(byId("reqs",s.reqId)),vendor:venName(s.vendorId),candidate:s.cand.name,years:s.cand.years,rate:s.rate,stage:s.stage,submitted:s.submittedAt,interviewScore:s.feedback?.score})),
+    assignments: sc.assigns.map(a=>({worker:a.worker,facility:facName(a.facilityId),vendor:venName(a.vendorId),title:a.title,start:a.start,end:a.end,status:isLive(a)?(a.start>today()?"upcoming":"active"):a.status,bill:a.bill,unit:unitOf(a),clearedToStart:cleared(a)})),
+    invoices: sc.invoices.map(i=>({no:"INV-"+i.no,facility:facName(i.facilityId),created:i.createdAt,status:i.status,labor:i.labor??i.total,expenses:i.expenses||0,total:i.total}))
+  };
+  const prompt = `You answer questions about a healthcare staffing vendor management system for SkyBridge Healthcare. Use only the data below. If the data can't answer the question, say what's missing. Answer in a few short sentences or a short list, with the numbers that back it up. No markdown headings.
+
+Question: ${q}
+
+Data (JSON):
+${JSON.stringify(data)}`;
+  aiStream(prompt, $("ask-out"), btn);
 }
 
 /* =========================================================
@@ -1157,7 +1627,7 @@ async function invCSV(id){
 function renderPartners(){
   const d = D(), el = $("p-partners");
   el.innerHTML = `
-    <div class="head-row"><div><h2>Vendors &amp; facilities</h2><p class="muted small">Agencies that submit clinicians, and the facilities that post openings. Vendor documents are flagged 45 days before they expire.</p></div></div>
+    <div class="head-row"><div><h2>Vendors &amp; facilities</h2><p class="muted small">Agencies that submit clinicians, and the facilities that post openings with their rate cards and budgets. Vendor documents are flagged 45 days before they expire.</p></div></div>
     <div class="card stack">
       <div class="head-row"><h3>Vendors · ${d.vendors.length}</h3><button class="btn sm" data-act="ven-edit">Add vendor</button></div>
       ${d.vendors.length ? `<div class="tbl"><table><thead><tr><th>Vendor</th><th>Tier</th><th>Documents</th><th class="n">Working</th><th>Status</th><th></th></tr></thead><tbody>
@@ -1172,10 +1642,12 @@ function renderPartners(){
     </div>
     <div class="card stack">
       <div class="head-row"><h3>Facilities · ${d.facilities.length}</h3><button class="btn sm" data-act="fac-edit">Add facility</button></div>
-      ${d.facilities.length ? `<div class="tbl"><table><thead><tr><th>Facility</th><th>Setting</th><th>Units</th><th class="n">VMS fee</th><th class="n">Open reqs</th><th></th></tr></thead><tbody>
+      ${d.facilities.length ? `<div class="tbl"><table><thead><tr><th>Facility</th><th>Setting</th><th>Rate card</th><th class="n">Budget</th><th class="n">VMS fee</th><th class="n">Open reqs</th><th></th></tr></thead><tbody>
       ${d.facilities.map(f=>`<tr>
         <td><b>${esc(f.name)}</b><span class="sub2">${esc(f.city)}, ${esc(f.state)}${f.contact?" · "+esc(f.contact):""}</span></td>
-        <td>${esc(f.setting)}</td><td class="small">${esc((f.units||[]).join(", "))}</td>
+        <td>${esc(f.setting)}</td>
+        <td class="small">${Object.keys(f.rates||{}).length ? Object.entries(f.rates).map(([k,c])=>`<span class="chip sm" data-tip="${esc(`${k}: target ${rateU(c.target,c.unit)}, max ${rateU(c.max,c.unit)}`)}">${esc(k)} ${usd0(c.max)}/${UNITS[c.unit||"hour"].u}</span>`).join(" ") : `<span class="muted">None set</span>`}</td>
+        <td class="n">${f.budget?usd0(f.budget):"–"}</td>
         <td class="n">${f.feePct}%</td><td class="n">${d.reqs.filter(r=>r.facilityId===f.id && r.status==="open").length}</td>
         <td><div class="acts"><button class="btn sm ghost" data-act="fac-edit" data-id="${esc(f.id)}">Edit</button></div></td></tr>`).join("")}
       </tbody></table></div>` : `<p class="muted small">No facilities yet. Add the clients who post openings.</p>`}
@@ -1195,27 +1667,74 @@ function venForm(id){
     id ? "Save vendor" : "Add vendor",
     async fd=>{
       const doc = {...v,id:v.id||newId(),name:fd.name.trim(),tier:+fd.tier,status:fd.status,contact:fd.contact.trim(),email:fd.email.trim(),docs:Object.fromEntries(VDOCS.map(x=>[x.id,fd[x.id]||""]))};
-      if(await Store.put("vendors",doc)) toast(`${doc.name} saved`);
+      if(await Store.put("vendors",doc)){ toast(`${doc.name} saved`); log(`${id?"Updated":"Added"} vendor ${doc.name}`,{col:"vendors",id:doc.id,vendorId:doc.id}); }
     });
 }
 function facForm(id){
-  const f = id ? byId("facilities",id) : {setting:"Home Health",feePct:4,units:[]};
+  const f = id ? byId("facilities",id) : {setting:"Home Health",feePct:4,mileage:DEFAULT_MILEAGE,budget:"",units:[],rates:{}};
   openDialog(id ? `Edit ${f.name}` : "Add a facility", `
     <div class="fgrid">
       <label class="f wide">Facility name<input type="text" name="name" id="ff-name" required value="${esc(f.name)}"></label>
       <label class="f">Setting<select name="setting" id="ff-setting">${SETTINGS.map(s=>`<option${s===f.setting?" selected":""}>${s}</option>`).join("")}</select></label>
-      <label class="f">VMS fee (%)<input type="number" name="feePct" id="ff-fee" required min="0" max="20" step="0.1" value="${esc(f.feePct)}"></label>
+      <label class="f">VMS fee (% of labor)<input type="number" name="feePct" id="ff-fee" required min="0" max="20" step="0.1" value="${esc(f.feePct)}"></label>
+      <label class="f">Mileage rate ($/mile)<input type="number" name="mileage" id="ff-mile" min="0" max="5" step="0.005" value="${esc(f.mileage ?? DEFAULT_MILEAGE)}"></label>
+      <label class="f">Annual budget ($)<input type="number" name="budget" id="ff-budget" min="0" step="1000" value="${esc(f.budget)}"></label>
       <label class="f">City<input type="text" name="city" id="ff-city" required value="${esc(f.city)}"></label>
       <label class="f">State<input type="text" name="state" id="ff-state" required maxlength="2" value="${esc(f.state)}" style="text-transform:uppercase"></label>
       <label class="f">Contact<input type="text" name="contact" id="ff-contact" value="${esc(f.contact)}"></label>
       <label class="f">Email<input type="email" name="email" id="ff-email" value="${esc(f.email)}"></label>
       <label class="f wide">Units or teams (comma-separated)<input type="text" name="units" id="ff-units" value="${esc((f.units||[]).join(", "))}" placeholder="Field visits, Intake, ICU"></label>
-    </div>`,
+    </div>
+    <div class="stack-s"><h3>Rate card</h3><p class="muted small">Target fills in new requisitions. Anything above max needs a reason and shows as over the rate card when SkyBridge approves. Leave a row blank to skip it.</p>
+    <div class="tbl ratecard"><table><thead><tr><th>Discipline</th><th>Billed</th><th>Target ($)</th><th>Max ($)</th></tr></thead><tbody>
+      ${DISCIPLINES.map(k=>{ const c = f.rates?.[k] || {}; return `<tr><td><b>${k}</b></td><td><select name="ru_${k}" id="ff-ru-${k}" aria-label="${k} billed">${Object.entries(UNITS).map(([u,x])=>`<option value="${u}"${(c.unit||"hour")===u?" selected":""}>${x.l}</option>`).join("")}</select></td>
+        <td><input type="number" name="rt_${k}" id="ff-rt-${k}" min="0" step="0.01" value="${esc(c.target??"")}" aria-label="${k} target"></td><td><input type="number" name="rm_${k}" id="ff-rm-${k}" min="0" step="0.01" value="${esc(c.max??"")}" aria-label="${k} max"></td></tr>`; }).join("")}
+    </tbody></table></div></div>`,
     id ? "Save facility" : "Add facility",
     async fd=>{
-      const doc = {...f,id:f.id||newId(),name:fd.name.trim(),setting:fd.setting,feePct:+fd.feePct,city:fd.city.trim(),state:fd.state.trim().toUpperCase(),contact:fd.contact.trim(),email:fd.email.trim(),units:fd.units.split(",").map(s=>s.trim()).filter(Boolean)};
-      if(await Store.put("facilities",doc)) toast(`${doc.name} saved`);
+      const rates = {};
+      for(const k of DISCIPLINES){
+        const t = +fd["rt_"+k]||0, m = +fd["rm_"+k]||0;
+        if(!t && !m) continue;
+        if(m && t && m<t) return `The ${k} max can't be lower than its target.`;
+        rates[k] = {unit:fd["ru_"+k],target:t||m,max:m||t};
+      }
+      const doc = {...f,id:f.id||newId(),name:fd.name.trim(),setting:fd.setting,feePct:+fd.feePct,mileage:+fd.mileage||0,budget:+fd.budget||0,city:fd.city.trim(),state:fd.state.trim().toUpperCase(),contact:fd.contact.trim(),email:fd.email.trim(),units:fd.units.split(",").map(s=>s.trim()).filter(Boolean),rates};
+      if(await Store.put("facilities",doc)){ toast(`${doc.name} saved`); log(`${id?"Updated":"Added"} facility ${doc.name}`,{col:"facilities",id:doc.id,facilityId:doc.id}); }
     });
+}
+
+/* =========================================================
+   Search (Ctrl K)
+   ========================================================= */
+function openSearch(){
+  openDialog("Search", `
+    <input type="search" id="pal-q" placeholder="Requisitions, candidates, clinicians, invoices, vendors…" aria-label="Search" autocomplete="off">
+    <div class="pal-list" id="pal-res" role="listbox" aria-label="Results"></div>
+    <p class="tiny muted">Enter opens the first result. Esc closes.</p>`, null, null);
+  const draw = () => {
+    const q = norm($("pal-q").value), sc = scope(), out = [];
+    const hit = s => !q || norm(s).includes(q);
+    TABS.filter(t=>allowedTabs().includes(t)).forEach(t=>{ const l = $("t-"+t).firstChild.textContent.trim(); if(q && hit(l)) out.push({k:"Go to",l,act:"go",tab:t}); });
+    sc.reqs.forEach(r=>{ if(hit(`${reqNo(r)} ${reqTitle(r)} ${facName(r.facilityId)} ${r.unit}`)) out.push({k:reqNo(r),l:reqTitle(r),s:`${facName(r.facilityId)} · ${r.status}`,act:"req-view",id:r.id}); });
+    sc.subs.forEach(s=>{ const r = byId("reqs",s.reqId); if(q && hit(`${s.cand.name} ${s.cand.lic}`)) out.push({k:"Candidate",l:s.cand.name,s:`${reqNo(r)} · ${stageLabel(s.stage)} · ${venName(s.vendorId)}`,act:"req-view",id:s.reqId}); });
+    sc.assigns.forEach(a=>{ if(q && hit(`${a.worker} ${a.title}`)) out.push({k:"Clinician",l:a.worker,s:`${a.title} · ${facName(a.facilityId)}`,act:"asg-onboard",id:a.id}); });
+    sc.invoices.forEach(i=>{ if(q && hit(`INV-${i.no} ${i.no} ${facName(i.facilityId)}`)) out.push({k:`INV-${i.no}`,l:facName(i.facilityId),s:`${usd(i.total)} · ${i.status}`,act:"inv-view",id:i.id}); });
+    if(S.role==="admin"){
+      D().vendors.forEach(v=>{ if(q && hit(v.name)) out.push({k:"Vendor",l:v.name,s:`Tier ${v.tier}`,act:"ven-edit",id:v.id}); });
+      D().facilities.forEach(f=>{ if(q && hit(f.name)) out.push({k:"Facility",l:f.name,s:f.setting,act:"fac-edit",id:f.id}); });
+    }
+    $("pal-res").innerHTML = out.slice(0,30).map((o,i)=>`<button type="button" role="option" class="${i===0?"on":""}" data-act="${o.act}" ${o.id?`data-id="${esc(o.id)}"`:""} ${o.tab?`data-tab="${o.tab}"`:""}><span class="k">${esc(o.k)}</span><span><b>${esc(o.l)}</b>${o.s?`<span class="sub2">${esc(o.s)}</span>`:""}</span></button>`).join("") || `<p class="muted small" style="padding:8px 10px">Nothing matches “${esc($("pal-q").value)}”.</p>`;
+  };
+  $("pal-q").addEventListener("input",draw);
+  $("pal-q").addEventListener("keydown",e=>{
+    const items = [...$("pal-res").querySelectorAll("button")];
+    let i = items.findIndex(b=>b.classList.contains("on"));
+    if(e.key==="ArrowDown" || e.key==="ArrowUp"){ e.preventDefault(); i = Math.max(0,Math.min(items.length-1,i+(e.key==="ArrowDown"?1:-1))); items.forEach((b,j)=>b.classList.toggle("on",j===i)); items[i]?.scrollIntoView({block:"nearest"}); }
+    if(e.key==="Enter"){ e.preventDefault(); items[Math.max(0,i)]?.click(); }
+  });
+  draw();
+  $("pal-q").focus();
 }
 
 /* =========================================================
@@ -1225,7 +1744,7 @@ const dlg = $("dlg");
 let dlgSubmit = null;
 function openDialog(title, body, submitLabel, onSubmit, extra=""){
   dlgSubmit = onSubmit;
-  dlg.innerHTML = `<form id="dlg-form">
+  dlg.innerHTML = `<form id="dlg-form" novalidate>
     <div class="dlg-head"><h2 id="dlg-title">${esc(title)}</h2><button type="button" class="btn quiet sm" data-act="dlg-close" aria-label="Close">Close</button></div>
     ${body}
     <p class="msg bad" id="dlg-err" role="alert" hidden></p>
@@ -1235,13 +1754,15 @@ function openDialog(title, body, submitLabel, onSubmit, extra=""){
     e.preventDefault();
     if(!dlgSubmit) return;
     const form = e.target;
+    const bad = [...form.elements].find(x=>x.willValidate && !x.checkValidity());
+    if(bad){ $("dlg-err").textContent = `${(bad.closest("fieldset")?.querySelector("legend")?.textContent || bad.closest("label")?.firstChild?.textContent || "A field").trim()}: ${bad.validationMessage}`; $("dlg-err").hidden = false; bad.focus(); return; }
     const fd = Object.fromEntries(new FormData(form));
     const err = await dlgSubmit(fd);
     if(typeof err==="string"){ $("dlg-err").textContent = err; $("dlg-err").hidden = false; return; }
     dlg.close();
   });
   if(!dlg.open) dlg.showModal();
-  dlg.querySelector("input:not([type=hidden]):not([disabled]),select:not([disabled]),textarea")?.focus();
+  dlg.querySelector("input:not([type=hidden]):not([disabled]):not([type=checkbox]),select:not([disabled]),textarea:not(#rf-paste)")?.focus();
 }
 
 /* =========================================================
@@ -1252,38 +1773,57 @@ const ACT = {
   "f": el => { F[el.dataset.k] = el.dataset.v; renderTab(); },
   "demo-off": () => { S.demoPref = false; render(); },
   "dlg-close": () => dlg.close(),
+  "search": () => openSearch(),
   "req-new": () => { if(!D().facilities.length){ toast("Add a facility first, on the Vendors & facilities tab."); return; } reqForm(); },
   "req-view": el => reqView(el.dataset.id),
   "req-edit": el => reqForm(byId("reqs",el.dataset.id)),
-  "req-release": async el => { const r = byId("reqs",el.dataset.id); if(await Store.put("reqs",{...r,release:2})){ toast(`${reqNo(r)} released to all tiers`); reqView(r.id); } },
-  "req-status": async el => { const r = byId("reqs",el.dataset.id); const v = el.dataset.v; if(await Store.put("reqs",{...r,status:v,release:Math.max(r.release||0,1)})){ toast(`${reqNo(r)} ${v==="open"?"is open":"is on hold"}`); reqView(r.id); } },
+  "req-parse": () => parsePosting(),
+  "req-approve": el => approveForm(el.dataset.id),
+  "req-return": el => returnReq(el.dataset.id),
+  "req-ai": el => compareCandidates(el.dataset.id, el),
+  "req-release": async el => { const r = byId("reqs",el.dataset.id); if(await Store.put("reqs",{...r,release:2,tier2At:""})){ toast(`${reqNo(r)} released to all tiers`); log(`Released ${reqNo(r)} to all tiers`,{col:"reqs",id:r.id,facilityId:r.facilityId}); reqView(r.id); } },
+  "req-status": async el => {
+    const r = byId("reqs",el.dataset.id), v = el.dataset.v;
+    if(await Store.put("reqs",{...r,status:v})){ toast(`${reqNo(r)} ${v==="open"?"is open again":v==="hold"?"is on hold":"is closed"}`); log(`${v==="open"?"Reopened":v==="hold"?"Put on hold":"Closed"} ${reqNo(r)}`,{col:"reqs",id:r.id,facilityId:r.facilityId}); reqView(r.id); }
+  },
   "req-del": async el => {
     if(!el.dataset.armed){ el.dataset.armed = "1"; el.textContent = "Click again to delete"; return; }
-    const r = byId("reqs",el.dataset.id); if(await Store.del("reqs",r.id)){ dlg.close(); toast(`${reqNo(r)} deleted`); }
+    const r = byId("reqs",el.dataset.id); if(await Store.del("reqs",r.id)){ dlg.close(); toast(`${reqNo(r)} deleted`); log(`Deleted ${reqNo(r)}`,{col:"reqs",id:r.id,facilityId:r.facilityId}); }
   },
   "sub-new": el => subForm(el.dataset.req),
   "sub-move": el => moveSub(el.dataset.id, el.dataset.v),
-  "asg-creds": el => credForm(el.dataset.id),
+  "sub-interview": el => interviewForm(el.dataset.id),
+  "sub-feedback": el => feedbackForm(el.dataset.id),
+  "asg-onboard": el => onboardForm(el.dataset.id),
   "asg-extend": el => extendForm(el.dataset.id),
   "asg-end": el => endForm(el.dataset.id),
   "ts-new": () => tsForm(),
   "ts-edit": el => tsForm(el.dataset.id),
   "ts-view": el => tsView(el.dataset.id),
-  "ts-approve": async el => { const t = byId("timesheets",el.dataset.id); if(await Store.put("timesheets",{...t,status:"approved",reason:""})){ dlg.open && dlg.close(); toast("Timesheet approved"); } },
+  "ts-approve": el => approveTime([el.dataset.id]),
+  "ts-approve-all": () => approveTime(scope().timesheets.filter(t=>t.status==="submitted").map(t=>t.id)),
   "ts-reject": el => rejectForm(el.dataset.id),
   "inv-make": () => makeInvoices(),
   "inv-view": el => invView(el.dataset.id),
-  "inv-status": async el => { const i = byId("invoices",el.dataset.id); if(await Store.put("invoices",{...i,status:el.dataset.v})){ toast(`INV-${i.no} marked ${el.dataset.v}`); invView(i.id); } },
+  "inv-status": async el => { const i = byId("invoices",el.dataset.id); if(await Store.put("invoices",{...i,status:el.dataset.v})){ toast(`INV-${i.no} marked ${el.dataset.v}`); log(`Marked INV-${i.no} ${el.dataset.v}`,{col:"invoices",id:i.id,facilityId:i.facilityId}); invView(i.id); } },
   "inv-csv": el => invCSV(el.dataset.id),
+  "rep-csv": () => repCSV(),
+  "act-more": () => { F.actN += 25; renderTab(); },
+  "ask": el => askData(el),
   "ven-edit": el => venForm(el.dataset.id),
   "fac-edit": el => facForm(el.dataset.id)
 };
 document.addEventListener("click", e=>{
   const el = e.target.closest("[data-act]");
-  if(!el || !ACT[el.dataset.act]) return;
+  if(!el || !ACT[el.dataset.act] || el.disabled) return;
   // a button inside a clickable row shouldn't also trigger the row
   e.stopPropagation();
   ACT[el.dataset.act](el);
+});
+document.addEventListener("keydown", e=>{
+  const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName);
+  if((e.key==="k" || e.key==="K") && (e.ctrlKey || e.metaKey)){ e.preventDefault(); openSearch(); }
+  else if(e.key==="/" && !typing && !dlg.open){ e.preventDefault(); openSearch(); }
 });
 $("demo-toggle").addEventListener("change",e=>{ S.demoPref = e.target.checked; render(); });
 $("role").addEventListener("change",e=>{ S.role = e.target.value; S.as = ""; ensureAs(); SS.set("sbvms.role",S.role); SS.set("sbvms.as",S.as); render(); });

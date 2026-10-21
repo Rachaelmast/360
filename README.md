@@ -13,16 +13,24 @@ Open `index.html` in a browser to use it locally. Locally, data stays in that br
 
 # SkyBridge VMS
 
-A vendor management system in `vms/`. Facilities post openings, vendor agencies submit clinicians, and SkyBridge runs everything in between.
+A vendor management system in `vms/`, modeled on what SAP Fieldglass does for contingent staffing and built for home health, hospice and acute care. Facilities post openings, vendor agencies submit clinicians, and SkyBridge runs everything in between.
 
-- **Dashboard**: open positions, fill rate, submittals to review, clinicians working, timesheets to approve, and billing. A "Needs attention" list flags expired or missing credentials, vendor insurance and contracts near expiry, openings starting soon with no candidates, and rates above the bill rate. There's also a candidate pipeline and a vendor scorecard.
-- **Requisitions**: post, edit, hold, and release openings to Tier 1 vendors first and then to all tiers.
-- **Submittals**: a stage board (Submitted → Shortlisted → Interview → Offer → Accepted). It blocks duplicate candidates (same name or license on the same requisition) and warns when a proposed rate is above the bill rate. Accepting an offer books the assignment and marks the requisition filled once every opening is taken.
-- **Assignments**: dates, bill rate, credential expiry (license, BLS, TB, physical, background) with a 30-day warning, extend, and end.
-- **Timesheets**: weekly hours, Sunday to Saturday; hours over 40 bill at 1.5×. The facility approves or sends back with a reason.
-- **Invoices**: one invoice per facility from approved timesheets. Shows vendor payables after the VMS fee. Can be marked sent or paid and exported to CSV.
-- **Vendors & facilities**: tiers, status, compliance documents, VMS fee, and units.
-- **Viewing as**: switch between SkyBridge admin, a facility manager and a vendor to see each side. This is a view switch, **not a login**: anyone with the link can switch. Real per-vendor and per-facility access needs a server backend.
-- **Sample data**: placeholder facilities, vendors and clinicians. It shows until a real record exists and is never saved.
+**Fieldglass-style workflow**
+- **Approvals:** facilities submit requisitions for SkyBridge to approve or send back with a note.
+- **Rate cards:** each facility has a target and max rate per discipline, billed hourly or per visit. Target fills in new requisitions; above max needs a written reason and is flagged at approval.
+- **Distribution:** release to Tier 1 vendors, then all tiers automatically after 1–5 days, or all at once.
+- **Submittals:** a stage board (Submitted → Shortlisted → Interview → Offer → Accepted) with interview scheduling and 1–5 feedback scores. Duplicate candidates (same name or license on a requisition) are blocked, and rates above the bill rate are flagged.
+- **Onboarding:** credentials (license, BLS, TB, physical, background) plus a pre-start checklist. A clinician is "cleared to start" only when everything is valid on day one.
+- **Time & expenses:** weekly hours or visits with overtime after 40 hours, mileage at each facility's rate, and other expenses. Facilities approve one by one or all at once.
+- **Consolidated invoicing:** one invoice per facility from approved time. The VMS fee comes out of labor only; expenses pass through to the vendor.
+- **Budgets and reports:** each facility's annual budget against invoiced and committed spend, spend by facility, vendor and discipline, CSV export, a vendor scorecard, and a full activity log.
 
-Open `vms/index.html` in a browser to use it locally. Locally, data stays in that browser only.
+**Where it goes further**
+- **Search everything:** press Ctrl K (or /) to search requisitions, candidates, clinicians, invoices, vendors and facilities.
+- **Home-health ready:** per-visit billing, mileage, and a link to Nursys for nurse license checks.
+- **Claude built in (published page only):** paste a job posting to fill in a requisition, compare a requisition's candidates, and ask questions about your data in Reports. Every answer is labeled as Claude's and is meant to be checked.
+- **Fewer clicks:** one-click stage moves, "Approve all" for time, a dashboard "Needs attention" list that opens the exact record, and a layout that works on a phone.
+
+**Viewing as** switches between SkyBridge admin, a facility manager and a vendor to show each side. This is a view switch, **not a login**: anyone with the link can switch. Real per-vendor and per-facility access needs a server backend.
+
+**Sample data** fills the page until a real record exists, and it's never saved. Open `vms/index.html` in a browser to use it locally, where data stays in that browser only and the Claude features are hidden.
