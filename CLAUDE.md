@@ -13,3 +13,11 @@ SkyBridge Healthcare 360 Review tool, a single-page app with no build step.
 - Storage: when it runs as an Artifact, the page uses the shared `db` capability (`cycles/*` that only editors can write; `responses/<reviewerId>` that each reviewer writes for themselves and only editors and the owner can read). Anywhere else it falls back to `localStorage`.
 - Placeholders: `DEV` (development ideas per competency) and `buildDemo()` (sample people and comments) are placeholder content meant to be replaced with SkyBridge's own.
 - Anonymity: peer, direct report, and partner groups with fewer than 3 reviewers are folded into "Other reviewers" in the report.
+
+## SkyBridge VMS (`vms/`)
+A vendor management system with the same conventions as the 360 tool: no build step, single page.
+
+- `vms/app.html` is the source, published as a claude.ai Artifact (https://claude.ai/artifact/7oVYvA7Pg2S7GWJiNUGUxw) with the `db`, `user` and `downloads` capabilities. `vms/index.html` is the same page with the full-document wrapper. After editing `app.html`, regenerate `index.html` by inserting `</head><body>` after the first `</style>` line and adding the doctype/meta header and the closing tags.
+- Collections (shared `db` docs, or `localStorage` keys `sbvms.<name>`): `facilities`, `vendors`, `reqs`, `subs`, `assigns`, `timesheets`, `invoices`.
+- Roles (`S.role`: admin, facility, vendor) only change the view through `scope()` and `can`. They are not a security boundary.
+- `buildDemo()` holds the placeholder sample data, kept in memory only.
