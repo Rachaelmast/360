@@ -13,5 +13,5 @@
     "allowImportingTsExtensions": true,
     "types": ["node", "chrome"]
   },
-  "include": ["src", "web/src", "extension", "test", "vite.config.ts", "vitest.config.ts"]
+  "include": ["src", "standalone", "web/src", "extension", "test", "vite.config.ts", "vitest.config.ts"]
 }

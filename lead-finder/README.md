@@ -2,7 +2,24 @@
 
 Internal tool that turns Vivian job postings into business-development leads: **find a job → identify the actual facility → verify → save → research → contact**. Separate from the 360 Review tool and the recruiter hub in this repository.
 
-## What works today
+## Simplest way to use it: one HTML file
+
+**`standalone/SkyBridge-Lead-Finder.html`**: download it and double-click it to open it in Chrome or Edge. There's nothing to install, no server, and no login.
+
+1. On a Vivian job page, click the **Copy for SkyBridge** bookmark. The file explains how to add it with one drag. Or use Ctrl+U, then Ctrl+A and Ctrl+C.
+2. In the Lead Finder, click **Paste from clipboard**. It shows the facility, address, VMS, specialty, staffing agency, and evidence.
+3. Correct anything if needed, then **Save lead**. Jobs at the same facility are grouped, and possible duplicates are offered, never merged automatically.
+4. Track status, owner, follow-up dates and notes. **Export CSV** opens in Excel.
+
+Data is stored in that browser only:
+- Use **Backup** regularly; it saves a `.json` file you can keep on OneDrive.
+- To combine leads with a teammate, **Restore** their backup file. It adds their facilities and jobs and never overwrites yours.
+
+Rebuild after code changes with `npm run build:html`.
+
+The rest of this README describes the full multi-user version (server, database, extension), kept for when a shared central database is wanted.
+
+## What works today (full version)
 
 | Area | Status |
 |---|---|

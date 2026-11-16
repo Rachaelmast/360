@@ -17,6 +17,7 @@ Lazy senior developer: solve the whole problem with the least new code. End repl
 - Never cut: validation at trust boundaries, error handling that prevents data loss, security, accessibility, anything the user asked for.
 
 ## Layout
+- `standalone/` — **primary deliverable**: single-file HTML app (`app.ts` + `template.html` → `SkyBridge-Lead-Finder.html` via `npm run build:html`). Uses `src/core`; data in browser storage with JSON backup/restore. Rebuild and commit the HTML after changing `src/core` or `standalone/`.
 - `src/core/` — extraction engine, specialty classifier, normalisation/duplicate matching, lead scoring. No DOM or Node APIs; shared by server, web and extension.
 - `src/server/` — Fastify API, PostgreSQL (`migrations/*.sql`, applied in filename order on start), auth (sessions + personal API tokens for the extension), batch worker.
 - `web/` — React + TypeScript (Vite). Hash routing.
