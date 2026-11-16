@@ -183,3 +183,29 @@ describe('VMS (vendor management system) capture', () => {
     expect(extractFromHtml(fixture('lower-cape-fear-lifecare.html')).vms).toEqual({ name: null, fields: [], mentions: [] });
   });
 });
+
+describe('real Vivian page structure (job page with similar jobs and viewer session)', () => {
+  // Shape mirrors a real Vivian job page saved by the user (values invented, no personal data):
+  // the job's own record has a blank hospitalName; "similarJobs" are other agencies' postings.
+  const nextData = { props: { pageProps: {
+    _session_initial_profile: { organizationName: 'Viewer Staffing Co', phoneNumber: '(555) 010-0000' },
+    content: {
+      hit: { hospitalName: '', hospitalCity: 'Pittsfield', hospitalState: 'Massachusetts', vmsName: null, vmsJobId: null, agency: { id: 1, name: 'Example Home Health Staffing' } },
+      similarJobs: [
+        { hospitalName: 'Other Medical Center', vmsName: 'ExampleVMS', vmsJobId: '12345', agency: { name: 'Competitor Staffing' } },
+        { hospitalName: 'Other Visiting Nurse Association', vmsName: 'ExampleVMS', vmsJobId: '12345', agency: { name: 'Another Agency' } },
+      ],
+    },
+  } } };
+  const ld = { '@type': 'JobPosting', title: 'Travel Home Health RN', hiringOrganization: { name: 'Example Home Health Staffing' } };
+  const html = page(`<script type="application/ld+json">${JSON.stringify(ld)}</script><script id="__NEXT_DATA__" type="application/json">${JSON.stringify(nextData)}</script>`);
+
+  it("never attributes another job's facility or VMS, or the viewer's own organization, to this job", () => {
+    const r = extractFromHtml(html);
+    expect(r.facility.name).toBeNull();
+    expect(r.status).toBe('agency_only');
+    expect(r.vms).toEqual({ name: null, fields: [], mentions: [] });
+    expect(JSON.stringify(r.evidence)).not.toMatch(/Other Medical Center|Other Visiting|Viewer Staffing|ExampleVMS/);
+    expect(r.classification.specialty).toBe('Home Health RN');
+  });
+});

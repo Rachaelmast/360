@@ -297,18 +297,31 @@ function addressFrom(m: Map<string, [string, unknown]>): { address: AddressParts
   return { address: { street, city, state, zip }, fields };
 }
 
-function walk(value: unknown, path: string, method: Evidence['method'], visit: (o: Obj, path: string, method: Evidence['method']) => void, depth = 0, seen = new Set<unknown>()): void {
+/** Lists of *other* jobs shown on a job page (e.g. Vivian's "similarJobs"). Their facility and VMS
+ *  belong to other postings, often other agencies, and must never be attributed to this job. */
+const OTHER_JOBS_KEY = /similar|related|recommend|suggest|other.?jobs|more.?jobs|nearby|session|profile|current.?user|viewer/i; // also the signed-in viewer's own data
+
+function collectStrings(v: unknown, out: Set<string>, depth = 0): void {
+  if (depth > 40) return;
+  if (typeof v === 'string') { const c = clean(v); if (c) out.add(c); }
+  else if (Array.isArray(v)) v.forEach((x) => collectStrings(x, out, depth + 1));
+  else if (isObj(v)) Object.values(v).forEach((x) => collectStrings(x, out, depth + 1));
+}
+
+function walk(value: unknown, path: string, method: Evidence['method'], visit: (o: Obj, path: string, method: Evidence['method']) => void, depth = 0, seen = new Set<unknown>(), otherJobs?: Set<string>): void {
   if (depth > 40 || seen.has(value)) return;
   if (Array.isArray(value)) {
     seen.add(value);
-    value.slice(0, 2000).forEach((v, i) => walk(v, `${path}[${i}]`, method, visit, depth + 1, seen));
+    value.slice(0, 2000).forEach((v, i) => walk(v, `${path}[${i}]`, method, visit, depth + 1, seen, otherJobs));
     return;
   }
   if (!isObj(value)) return;
   seen.add(value);
   visit(value, path, method);
   for (const [k, v] of Object.entries(value)) {
-    if (v && typeof v === 'object') walk(v, path ? `${path}.${k}` : k, method, visit, depth + 1, seen);
+    if (!v || typeof v !== 'object') continue;
+    if (OTHER_JOBS_KEY.test(k)) { if (otherJobs) collectStrings(v, otherJobs); continue; }
+    walk(v, path ? `${path}.${k}` : k, method, visit, depth + 1, seen, otherJobs);
   }
 }
 
@@ -356,11 +369,12 @@ export function extractFromHtml(html: string, opts: ExtractOptions = {}): Extrac
   }
 
   const vmsFields: ExtractionResult['vms']['fields'] = [];
+  const otherJobValues = new Set<string>();
   function addVms(field: string, v: unknown, path: string) {
-    const value = isObj(v) ? clean(v.name) ?? JSON.stringify(v).slice(0, 200)
+    const value = isObj(v) ? clean(v.name)
       : Array.isArray(v) ? v.map((x) => (isObj(x) ? clean(x.name) : clean(x as string))).filter(Boolean).join(', ')
       : typeof v === 'boolean' ? String(v) : clean(v);
-    if (value && !vmsFields.some((x) => x.field === field && x.value === value)) vmsFields.push({ field, value, path });
+    if (value && !(path === 'text' && otherJobValues.has(value) && !vmsFields.some((x) => x.value === value)) && !vmsFields.some((x) => x.field === field && x.value === value)) vmsFields.push({ field, value, path });
   }
 
   if (opts.url) job.externalId = opts.url.match(/\/job\/([A-Za-z0-9-]+)/)?.[1] ?? null;
@@ -455,7 +469,7 @@ export function extractFromHtml(html: string, opts: ExtractOptions = {}): Extrac
         job.specialtyHint = job.specialtyHint && !job.specialtyHint.includes(sp.value) ? `${job.specialtyHint}; ${sp.value}` : (job.specialtyHint ?? sp.value);
         ev({ field: sp.key, path, value: sp.value, method });
       }
-    });
+    }, 0, new Set(), otherJobValues);
   }
 
   // 2) raw-text fallback across escape levels
@@ -484,7 +498,7 @@ export function extractFromHtml(html: string, opts: ExtractOptions = {}): Extrac
   };
   for (const [tier, keys] of [['facility', FACILITY_NAME_KEYS], ['organization', ORG_NAME_KEYS], ['agency', AGENCY_NAME_KEYS]] as const) {
     for (const h of fromText(keys)) {
-      if (known.has(`${tier}|${h.value}`)) continue;
+      if (known.has(`${tier}|${h.value}`) || otherJobValues.has(h.value)) continue;
       known.add(`${tier}|${h.value}`);
       const addrFields: string[] = [];
       const take = (ks: string[]) => { const n = tier === 'facility' ? near(h, ks) : null; if (n) addrFields.push(n.key); return n?.value ?? null; };
