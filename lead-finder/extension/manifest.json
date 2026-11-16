@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "SkyBridge Facility Lead Finder",
+  "version": "0.1.0",
+  "description": "Identify the facility behind the Vivian job posting you are viewing and save it to SkyBridge's lead database.",
+  "action": { "default_popup": "popup.html", "default_title": "Find facility" },
+  "options_ui": { "page": "options.html", "open_in_tab": true },
+  "permissions": ["activeTab", "scripting", "storage"],
+  "optional_host_permissions": ["http://*/*", "https://*/*"],
+  "icons": { "128": "icon128.png" }
+}

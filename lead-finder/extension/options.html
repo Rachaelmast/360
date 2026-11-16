@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SkyBridge Lead Finder settings</title>
+<style>
+  body { font: 14px 'Segoe UI', system-ui, sans-serif; max-width: 520px; margin: 40px auto; color: #111827; }
+  label { display: block; font-weight: 600; margin: 14px 0 4px; font-size: 13px; }
+  input { width: 100%; box-sizing: border-box; font: inherit; padding: 7px 9px; border: 1px solid #d1d5db; border-radius: 6px; }
+  button { margin-top: 16px; font: inherit; padding: 8px 14px; border-radius: 6px; border: 1px solid #1d4ed8; background: #1d4ed8; color: #fff; font-weight: 600; cursor: pointer; }
+  p { color: #374151; } #msg { margin-top: 12px; }
+</style>
+</head>
+<body>
+<h2>SkyBridge Facility Lead Finder</h2>
+<p>Get both values from the web app: <b>Settings → Browser extension</b>.</p>
+<label for="server">Server address</label><input id="server" placeholder="https://leads.skybridge.example">
+<label for="token">Personal access token</label><input id="token" type="password" placeholder="lfk_…">
+<button id="save">Save and test</button>
+<div id="msg"></div>
+<p style="margin-top:24px;font-size:12px;color:#6b7280">The extension only reads a tab when you click it, and only sends that page to this server.</p>
+<script src="options.js"></script>
+</body>
+</html>

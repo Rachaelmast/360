@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  body { width: 380px; margin: 0; font: 13px 'Segoe UI', system-ui, sans-serif; color: #111827; }
+  header { background: #0b2a5b; color: #fff; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; }
+  header a { color: #b9cdf0; font-size: 12px; }
+  main { padding: 12px; }
+  label { display: block; font-size: 11px; color: #374151; margin: 8px 0 2px; font-weight: 600; }
+  input, select { width: 100%; box-sizing: border-box; font: inherit; padding: 5px 7px; border: 1px solid #d1d5db; border-radius: 5px; }
+  .row { display: flex; gap: 6px; } .row > * { flex: 1; }
+  button { font: inherit; padding: 7px 10px; border-radius: 5px; border: 1px solid #1d4ed8; background: #1d4ed8; color: #fff; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; }
+  button:disabled { opacity: .5; cursor: default; }
+  .badge { display: inline-block; padding: 1px 7px; border-radius: 99px; font-size: 11px; font-weight: 600; background: #eef0f3; margin: 0 4px 4px 0; }
+  .green { background: #e7f6ef; color: #047857; } .amber { background: #fdf3e1; color: #92400e; } .red { background: #fdecea; color: #b42318; } .blue { background: #eff5ff; color: #1d4ed8; } .violet { background: #f1ebfd; color: #5b21b6; }
+  .note { border-radius: 6px; padding: 7px 9px; margin: 8px 0; font-size: 12px; background: #eff5ff; color: #0b2a5b; }
+  .note.warn { background: #fdf3e1; color: #92400e; } .note.err { background: #fdecea; color: #b42318; } .note.ok { background: #e7f6ef; color: #047857; }
+  .muted { color: #6b7280; font-size: 11px; }
+  ul { margin: 4px 0 0; padding-left: 16px; }
+  a { color: #1d4ed8; }
+</style>
+</head>
+<body>
+<header><b>SkyBridge Lead Finder</b><a href="#" id="opts">Settings</a></header>
+<main id="app"><p class="muted">Reading this page…</p></main>
+<script src="popup.js"></script>
+</body>
+</html>
